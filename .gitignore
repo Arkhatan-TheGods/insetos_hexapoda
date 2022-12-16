@@ -1,0 +1,15 @@
+# IDE VSCODE
+.vscode/
+
+# Scrapy stuff:
+.scrapy
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+env-insetos_hexapoda/
