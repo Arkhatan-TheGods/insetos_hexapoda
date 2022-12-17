@@ -12,4 +12,4 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-env-insetos_hexapoda/
+env_insetos_hexapoda/
