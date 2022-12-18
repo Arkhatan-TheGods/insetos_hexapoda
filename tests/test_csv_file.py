@@ -35,7 +35,7 @@ def test_passes_writing_csv(setup):
         assert True
 
 # @pytest.mark.skip(reason="")
-def test_passes_read_csv():
+def test_passes_read_csv(setup):
 
     path_file = setup
 
