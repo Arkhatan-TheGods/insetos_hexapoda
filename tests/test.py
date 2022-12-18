@@ -1,14 +1,11 @@
-salario = float(input('digite o salário: '))
-valor_emp = float(input('valor do empréstimo: '))
-parcelas = int(input('quantidade de parcelas'))
 
-def test_emprestimo(salario, valor_emp, parcelas):
+def test_emprestimo():
+    salario = 5000
+    valor_emp = 20000
+    parcelas = 24
     dezporcento = salario * 0.10
     totmes = valor_emp/parcelas
     if totmes < dezporcento:
-        print('empréstimo aprovado.')  
+        print('empréstimo aprovado.')
     else:
         print('empréstimo negado.')
-        
-        
-test_emprestimo(salario, valor_emp, parcelas)

@@ -9,3 +9,5 @@ Incluir o texto abaixo para instalação das dependências
 Para a instalação das dependências, executar o seguinte comando:
 
 pip freeze > requirements.txt
+
+links usados: https://pt.wikipedia.org/wiki/Lista_dos_maiores_insetos
