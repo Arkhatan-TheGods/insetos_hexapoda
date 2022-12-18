@@ -21,11 +21,13 @@ def test_passes_writing_csv(setup):
 
     try:
 
-        data = ['identificador', 'nome_a', 'nome_b']
-
         file_temp = setup
 
-        csv.writing_csv(file_temp, data)
+        header = ['identificador', 'nome_a', 'nome_b']
+
+        data = ['AAA', 'BBB', 'CCC']
+
+        csv.writing_csv(file_temp, header, data)
 
         assert False
 
@@ -33,12 +35,12 @@ def test_passes_writing_csv(setup):
         assert True
 
 # @pytest.mark.skip(reason="")
-
-
 def test_passes_read_csv():
 
-    path_file = ""
+    path_file = setup
 
     res = csv.read_data_frame(path_file)
+
+    print("res>:::::::::::", res)
 
     assert res
