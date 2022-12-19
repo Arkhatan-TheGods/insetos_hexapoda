@@ -3,6 +3,17 @@ import os
 import insetos_hexapoda.csv_file as csv
 
 
+class Insect:
+
+    def __init__(self, genre: str,
+                 length: list[str],
+                 food: list[str]) -> None:
+
+        self.genre = genre
+        self.length = length
+        self.food = food
+
+
 def remove_file_temp(file_temp):
     os.remove(file_temp)
 
@@ -34,7 +45,8 @@ def test_passes_writing_csv(setup):
     except Exception:
         assert True
 
-# @pytest.mark.skip(reason="")
+
+@pytest.mark.skip(reason="")
 def test_passes_read_csv(setup):
 
     path_file = setup
@@ -44,3 +56,20 @@ def test_passes_read_csv(setup):
     print("res>:::::::::::", res)
 
     assert res
+
+
+def check_genre(mantodea: dict[str, Insect]) -> bool:
+
+    genre: str = mantodea["louva-a-deus"].genre
+
+    return "rhombodera" == genre.lower()
+
+
+def test_pass_check_genre():
+
+    insect = Insect("Rhombodera", ['12cm', '20cm'],
+                    ['rãs', 'lagartos', 'ratos', 'pássaros', 'pequenos', 'cobras'])
+
+    mantodea = {"louva-a-deus": insect}
+
+    assert check_genre(mantodea)
