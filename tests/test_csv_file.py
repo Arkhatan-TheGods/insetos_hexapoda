@@ -34,7 +34,8 @@ def test_passes_writing_csv(setup):
     except Exception:
         assert True
 
-# @pytest.mark.skip(reason="")
+
+@pytest.mark.skip(reason="")
 def test_passes_read_csv(setup):
 
     path_file = setup
@@ -44,3 +45,7 @@ def test_passes_read_csv(setup):
     print("res>:::::::::::", res)
 
     assert res
+
+
+
+
