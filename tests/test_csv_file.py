@@ -42,7 +42,7 @@ def test_passes_read_csv(setup):
 
     res = csv.read_data_frame(path_file)
 
-    print("res>:::::::::::", res)
+    # print("res>:::::::::::", res)
 
     assert res
 

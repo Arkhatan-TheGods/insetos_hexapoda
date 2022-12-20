@@ -1,45 +1,23 @@
-import time
-import pytest
+valores = (int(input('primeiro valor: ')), int(input('segundo valor: ')), int(input('terceiro valor: ')), int(input('quarto valor: ')))
 
-# print('Os cinco primeiros:', end= ' ')
+par = 0
 
-# for cont in range(0,5):
-#     print(f' {times[cont]}', end=' ')
+for valor in valores:
+    if valor % 2 == 0:
+        par += 1
 
-# print('-'*80)
-# print('Os quatro últimos:', end='')
+print(f'você digitou os números: {valores}')
 
-# for cont in range(-1,4):
-#     print(f' {times[cont]}', end= '')
+if 3 in valores:
+    print(f'a primeira posição do número três ocorre: {valores.index(3)+1}ª posição.')
+else:
+    print('o valor 3 não foi digitado.')
 
-# print('-'*80)
-# print(f' \n Ordem alfabética {sorted(times)}.')
-# print(f'\nOrdem alfabética:', end=' ')
-
-@pytest.fixture(scope='module')
-def setup():
-    
-    times = ('Corinthians ','Palmeiras ','Santos ','Grêmio ','Cruzeiro ',
-            'Flamengo ','Vasco da Gama ','Chapecoense ','Atlético-MG ',
-            'Botafogo ','Athletico-PR ','Bahia ','São Paulo ','Fluminense',
-            'Sport Recife ','EC Vitória ','Coritiba ','Avaí ','Ponte Preta ',
-            'Atlético-GO ')
-
-    return times
-
-def test_ordena_times(setup):
-
-    lista_times = setup
-
-    times_sorted = sorted(lista_times)
-
-    for i, pos in enumerate(times_sorted, 1):
-
-        print(f"{i} - {pos}")
-
-        time.sleep(.1)
-
-
-
-# print('-'*80)
-# print('Posição do Chapecoense {}ª.'.format(times.index('Chapecoense ')+1))
+if par > 0:
+    print(f'total de números pares: {par}')
+else:
+    print('não foram digitados pares.')
+if 9 in valores:
+    print(f'o número nove apareceu: {valores.count(9)} vezes')
+else:
+    print('o número 9 não foi digitado.')
