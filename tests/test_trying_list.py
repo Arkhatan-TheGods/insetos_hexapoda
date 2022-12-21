@@ -14,14 +14,19 @@ dados = [['Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
          ['08:25:00', '13:25:00', '12:15:00', '18:28:00', '187']]
 
 dados[0].append('Worked Hours')
+dados[0].append('Time in Lunch')
 
 start_time = []
 lunch_start = []
 lunch_end = []
 end_time = []
+worked_hours = []
+time_in_lunch = []
+
 for lista in dados:
     #print(lista[0])
     start_time.append(lista[0])
     lunch_start.append(lista[1])
     lunch_end.append(lista[2])
     end_time.append(lista[3])
+
