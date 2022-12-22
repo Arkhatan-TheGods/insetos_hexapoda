@@ -39,7 +39,12 @@ def test_ordena_times(setup):
 
         time.sleep(.1)
 
+def test_data():
 
+    # endereco:str = "RUA PITON"
+    endereco:int = 0
+
+    assert type(endereco) == int
 
 # print('-'*80)
 # print('Posição do Chapecoense {}ª.'.format(times.index('Chapecoense ')+1))
