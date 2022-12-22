@@ -13,11 +13,22 @@ if 3 in valores:
 else:
     print('o valor 3 não foi digitado.')
 
-if par > 0:
-    print(f'total de números pares: {par}')
-else:
-    print('não foram digitados pares.')
-if 9 in valores:
-    print(f'o número nove apareceu: {valores.count(9)} vezes')
-else:
-    print('o número 9 não foi digitado.')
+    lista_times = setup
+
+    times_sorted = sorted(lista_times)
+
+    for i, pos in enumerate(times_sorted, 1):
+
+        print(f"{i} - {pos}")
+
+        time.sleep(.1)
+
+def test_data():
+
+    # endereco:str = "RUA PITON"
+    endereco:int = 0
+
+    assert type(endereco) == int
+
+# print('-'*80)
+# print('Posição do Chapecoense {}ª.'.format(times.index('Chapecoense ')+1))
