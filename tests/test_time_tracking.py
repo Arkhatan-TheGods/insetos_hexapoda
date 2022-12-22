@@ -3,7 +3,7 @@ import os
 import csv
 import pytest
 import requests
-from typing import Tuple
+from typing import Tuple, Union
 
 Setup = Tuple[str, requests.models.Response]
 
@@ -130,22 +130,17 @@ def test_pass_calculate_work_hours():
                                  lunch_end="13:00:00",
                                  end_time="18:00:00",
                                  user_id="152")
-
-    if time_tracking.end_time and \
-        time_tracking.start_time and \
-       time_tracking.lunch_end and \
-            time_tracking.lunch_start is not None:
+    
+    if time_tracking.end_time and time_tracking.start_time and \
+       time_tracking.lunch_end and time_tracking.lunch_start is not None:
 
         time_work = time_tracking.end_time - time_tracking.start_time
         time_lunch = time_tracking.lunch_end - time_tracking.lunch_start
 
-        result = calculate_work_hours(time_work, time_lunch)
-        
-        # assert (datetime.strptime("08:45:00", "%H:%M:%S") - result).time() == datetime.strptime("00:00:00", "%H:%M:%S").time()
-        assert str((datetime.strptime("08:35:00", "%H:%M:%S")-result).time()) == "00:00:00"
-        
-        # assert result.seconds == timedelta(seconds=v.timestamp())
+        total_hours = calculate_work_hours(time_work, time_lunch)
 
+        assert (timedelta(hours=8, minutes=35) - total_hours).total_seconds() == 0.0
+        
 def test_pass_csv_parse(setup: Setup):
 
     _, response = setup
