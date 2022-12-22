@@ -1,33 +1,17 @@
-import time
-import pytest
+valores = (int(input('primeiro valor: ')), int(input('segundo valor: ')), int(input('terceiro valor: ')), int(input('quarto valor: ')))
 
-# print('Os cinco primeiros:', end= ' ')
+par = 0
 
-# for cont in range(0,5):
-#     print(f' {times[cont]}', end=' ')
+for valor in valores:
+    if valor % 2 == 0:
+        par += 1
 
-# print('-'*80)
-# print('Os quatro últimos:', end='')
+print(f'você digitou os números: {valores}')
 
-# for cont in range(-1,4):
-#     print(f' {times[cont]}', end= '')
-
-# print('-'*80)
-# print(f' \n Ordem alfabética {sorted(times)}.')
-# print(f'\nOrdem alfabética:', end=' ')
-
-@pytest.fixture(scope='module')
-def setup():
-    
-    times = ('Corinthians ','Palmeiras ','Santos ','Grêmio ','Cruzeiro ',
-            'Flamengo ','Vasco da Gama ','Chapecoense ','Atlético-MG ',
-            'Botafogo ','Athletico-PR ','Bahia ','São Paulo ','Fluminense',
-            'Sport Recife ','EC Vitória ','Coritiba ','Avaí ','Ponte Preta ',
-            'Atlético-GO ')
-
-    return times
-
-def test_ordena_times(setup):
+if 3 in valores:
+    print(f'a primeira posição do número três ocorre: {valores.index(3)+1}ª posição.')
+else:
+    print('o valor 3 não foi digitado.')
 
     lista_times = setup
 
