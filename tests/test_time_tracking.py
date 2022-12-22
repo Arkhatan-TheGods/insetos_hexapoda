@@ -142,7 +142,7 @@ def test_pass_calculate_work_hours():
         result = calculate_work_hours(time_work, time_lunch)
         
         # assert (datetime.strptime("08:45:00", "%H:%M:%S") - result).time() == datetime.strptime("00:00:00", "%H:%M:%S").time()
-        assert str((datetime.strptime("08:40:00", "%H:%M:%S")-result).time()) == "00:00:00"
+        assert str((datetime.strptime("08:35:00", "%H:%M:%S")-result).time()) == "00:00:00"
         
         # assert result.seconds == timedelta(seconds=v.timestamp())
 
