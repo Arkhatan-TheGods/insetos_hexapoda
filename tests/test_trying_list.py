@@ -7,7 +7,7 @@ dados = [['Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
          ['18:40:00',    '12:25:00',  '12:48:00', '18:20:00',     '854'],
          ['09:10:00',    '12:13:00',  '13:00:00', '10:25:00',     ' 54'],
          ['08:45:00',    '12:25:00',  '13:20:00', '18:10:00',     '201'],
-         ['',    '12:10:00',  '13:00:00', '18:05:00',     '120'],
+         ['',            '12:10:00',  '13:00:00', '18:05:00',     '120'],
          ['08:15:00',            '',          '', '18:02:00',     '325'],
          ['10:00:00',    '12:10:00',  '13:05:00',         '',     '424'],
          ['09:15:00',    '12:02:00',          '', '18:25:00',     '211'],
@@ -52,7 +52,8 @@ while c < 11:
         entrada = datetime.strptime(start_time[c], '%H:%M:%S')
         saida = datetime.strptime(end_time[c], '%H:%M:%S')
         calculo = saida - entrada
-        print(calculo)
+        # resultado = calculo.strftime('%H:%M:%S')
+        print(f'O ID: {ID[c]} trabalhou ao total: {calculo}.')
 
         # print(f'ID: {ID[c]}')
 
