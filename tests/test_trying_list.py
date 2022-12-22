@@ -52,7 +52,8 @@ while c < 11:
         entrada = datetime.strptime(start_time[c], '%H:%M:%S')
         saida = datetime.strptime(end_time[c], '%H:%M:%S')
         calculo = saida - entrada
-        # resultado = calculo.strftime('%H:%M:%S')
+        if calculo < timedelta(days=0):
+            calculo += timedelta(days=1)
         print(f'O ID: {ID[c]} trabalhou ao total: {calculo}.')
 
         # print(f'ID: {ID[c]}')
