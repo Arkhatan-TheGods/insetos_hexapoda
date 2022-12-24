@@ -181,10 +181,10 @@ def test_pass_csv_parse(setup: Setup):
                                      end_time=row[4],
                                      user_id=row[5])
 
-        notifys = check_time(time_tracking)
+        notifiers = check_time(time_tracking)
 
         tracking.append({time_tracking.user_id.rjust(3, '0'):
-                        [notifys, None if notifys else str(get_total_hours(time_tracking))]})
+                        [notifiers, None if notifiers else str(get_total_hours(time_tracking))]})
 
     assert tracking != []
     
