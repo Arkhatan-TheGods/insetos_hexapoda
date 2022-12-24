@@ -1,9 +1,12 @@
-from datetime import datetime, timedelta
 import os
 import csv
 import pytest
 import requests
+from datetime import datetime, timedelta
+from dotenv import dotenv_values
 from typing import Tuple
+
+config = dotenv_values(".env_proto")
 
 Setup = Tuple[str, requests.models.Response]
 
@@ -88,7 +91,6 @@ def proto_setup():
 
     yield lista_time_tracking
 
-
 def test_pass_datatime_is_empty(proto_setup) -> None:
 
     time_tracking = proto_setup
@@ -104,19 +106,27 @@ def test_pass_calculate_work_hours(proto_setup):
     assert (timedelta(hours=9, minutes=8) -
             total_hours).total_seconds() == 0.0
 
-
 @pytest.fixture(scope='module')
 def setup():
 
-    CSV_URL = 'https://docs.google.com/spreadsheets/d/12IMjvF0w8MD7mYFpukNsn3F7FPJ0rlJUwM_sPnFlWW0/edit?usp=share_link'
+    csv_url = config.get("CSV_URL")
 
-    DRIVE_FILE_ID = CSV_URL.split('/')[-2]
+    file_csv = config.get("FILE_CSV")
 
-    CSV_URL = f'https://docs.google.com/spreadsheets/d/{DRIVE_FILE_ID}/export?format=csv'
+    folder_data = config.get("FOLDER_DATA")
 
-    response = requests.get(CSV_URL)
+    if csv_url is None:
+        raise TypeError("Valor 'None' fornecido para csv_url")
 
-    file_csv_tmp = os.path.join("./data", "time_tracking_temp.csv")
+    if file_csv is None:
+        raise TypeError("Valor 'None' fornecido para file_csv")
+
+    if folder_data is None:
+        raise TypeError("Valor 'None' fornecido para folder_data")
+
+    response = requests.get(csv_url)
+
+    file_csv_tmp = os.path.join(folder_data, file_csv)
 
     yield file_csv_tmp, response
 
@@ -124,7 +134,6 @@ def setup():
 
     if os.path.isfile(file_csv_tmp):
         os.remove(file_csv_tmp)
-
 
 def test_pass_status_code_200(setup: Setup):
 
