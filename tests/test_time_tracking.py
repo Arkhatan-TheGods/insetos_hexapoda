@@ -1,78 +1,132 @@
-from datetime import datetime, timedelta
 import os
 import csv
 import pytest
 import requests
+from datetime import datetime, timedelta
+from dotenv import dotenv_values
 from typing import Tuple
 
-Setup = Tuple[str, requests.models.Response]
+config = dotenv_values(".env_proto")
 
+Setup = Tuple[str, requests.models.Response]
 
 class Timetracking:
 
     def __init__(self,
+                 date: str,
                  start_time: str,
                  lunch_start: str,
                  lunch_end: str,
                  end_time: str,
                  user_id: str) -> None:
 
-        self.start_time = self.convert(start_time) if start_time != "" else None
-        self.lunch_start = self.convert(lunch_start) if lunch_start != "" else None
-        self.lunch_end = self.convert(lunch_end) if lunch_end != "" else None
-        self.end_time = self.convert(end_time) if end_time != "" else None
+        self.start_time_is_empty = self.is_empty_string(start_time)
+        self.lunch_start_is_empty = self.is_empty_string(lunch_start)
+        self.lunch_end_is_empty = self.is_empty_string(lunch_end)
+        self.end_time_is_empty = self.is_empty_string(end_time)
+
+        self.start_time = self.convert(date, start_time)
+        self.lunch_start = self.convert(date, lunch_start)
+        self.lunch_end = self.convert(date, lunch_end)
+        self.end_time = self.convert(date, end_time)
         self.user_id = user_id
 
-    def convert(self, time: str) -> datetime: \
-        return datetime.strptime(time[:5], "%H:%M")
+    def is_empty_string(self, value: str) -> bool:
+        return True if not value else False
 
-def check_time(time_tracking: Timetracking, compute_total):
+    def convert(self, date: str, time: str) -> datetime:
 
-    if time_tracking.start_time is None:
-        return {time_tracking.user_id.rjust(3, '0'):
-                [False, "start_time não registrado", None]}
+        date_time = f"{date} {time[:5]}"
+        
+        return datetime.strptime(date_time, "%d/%m/%Y %H:%M") \
+            if time else datetime.strptime("00:00", "%H:%M")
 
-    if time_tracking.lunch_start is None:
-        return {time_tracking.user_id.rjust(3, '0'):
-                [False, "lunch_start não registrado", None]}
+    def convert_to_date(self, date: str, format) -> datetime:
+        return datetime.strptime(date, format)
 
-    if time_tracking.lunch_end is None:
-        return {time_tracking.user_id.rjust(3, '0'):
-                [False, "lunch_end não registrado", None]}
+def check_time(time_tracking: Timetracking):
 
-    if time_tracking.end_time == None:
-        return {time_tracking.user_id.rjust(3, '0'):
-                [False, "end_time não registrado", None]}
+    messages = []
 
-    if time_tracking.start_time and time_tracking.end_time is not None:
-        if time_tracking.start_time.time() > time_tracking.end_time.time():
-            return {time_tracking.user_id.rjust(3, '0'):
-                    [False, "Horário inconsistente para start_time", None]}
+    if time_tracking.start_time_is_empty:
+        messages.append("start_time não registrado")
 
-    if time_tracking.lunch_start and time_tracking.lunch_end is not None:
-        if time_tracking.lunch_start.time() > time_tracking.lunch_end.time():
-            return {time_tracking.user_id.rjust(3, '0'):
-                    [False, "Horário inconsistente para lunch_start", None]}
+    if time_tracking.lunch_start_is_empty:
+        messages.append("lunch_start não registrado")
 
-    return {time_tracking.user_id.rjust(3, '0'):
-            [True, None, str(compute_total(time_tracking.end_time - time_tracking.start_time,
-                                            time_tracking.lunch_end - time_tracking.lunch_start))]}
+    if time_tracking.lunch_end_is_empty:
+        messages.append("lunch_end não registrado")
 
-def calculate_work_hours(time_work: timedelta,
-                  time_lunch: timedelta) -> timedelta: return time_work - time_lunch
+    if time_tracking.end_time_is_empty:
+        messages.append("end_time não registrado")
+
+    return messages
+
+def get_total_hours(time_tracking: Timetracking) -> timedelta:
+
+    time_work = time_tracking.end_time - time_tracking.start_time
+    time_lunch = time_tracking.lunch_end - time_tracking.lunch_start
+
+    return time_work - time_lunch
+
 
 @pytest.fixture(scope='function')
+def proto_setup():
+
+    lista = [
+        ["24/08/2022", "", "12:05:00", "13:08:00", "19:35:00", "201"],
+        ["05/07/2022", "10:14:00", "12:22:00", "13:05:00", "20:05:00", "302"],
+        ["18/10/2022", "08:25:00", "", "13:10:00", "18:55:00", "403"]
+    ]
+
+    lista_time_tracking = []
+
+    for row in lista:
+        lista_time_tracking.append(Timetracking(date=row[0],
+                                                start_time=row[1],
+                                                lunch_start=row[2],
+                                                lunch_end=row[3],
+                                                end_time=row[4],
+                                                user_id=row[5]))
+
+    yield lista_time_tracking
+
+def test_pass_datatime_is_empty(proto_setup) -> None:
+
+    time_tracking = proto_setup
+
+    assert time_tracking[0].start_time_is_empty
+
+def test_pass_calculate_work_hours(proto_setup):
+
+    time_tracking = proto_setup
+
+    total_hours = get_total_hours(time_tracking[1])
+
+    assert (timedelta(hours=9, minutes=8) -
+            total_hours).total_seconds() == 0.0
+
+@pytest.fixture(scope='module')
 def setup():
 
-    CSV_URL = 'https://docs.google.com/spreadsheets/d/12IMjvF0w8MD7mYFpukNsn3F7FPJ0rlJUwM_sPnFlWW0/edit?usp=share_link'
+    csv_url = config.get("CSV_URL")
 
-    DRIVE_FILE_ID = CSV_URL.split('/')[-2]
+    file_csv = config.get("FILE_CSV")
 
-    CSV_URL = f'https://docs.google.com/spreadsheets/d/{DRIVE_FILE_ID}/export?format=csv'
+    folder_data = config.get("FOLDER_DATA")
 
-    response = requests.get(CSV_URL)
+    if csv_url is None:
+        raise TypeError("Valor 'None' fornecido para csv_url")
 
-    file_csv_tmp = os.path.join("./data", "time_tracking_temp.csv")
+    if file_csv is None:
+        raise TypeError("Valor 'None' fornecido para file_csv")
+
+    if folder_data is None:
+        raise TypeError("Valor 'None' fornecido para folder_data")
+
+    response = requests.get(csv_url)
+
+    file_csv_tmp = os.path.join(folder_data, file_csv)
 
     yield file_csv_tmp, response
 
@@ -80,7 +134,6 @@ def setup():
 
     if os.path.isfile(file_csv_tmp):
         os.remove(file_csv_tmp)
-
 
 def test_pass_status_code_200(setup: Setup):
 
@@ -107,51 +160,13 @@ def test_pass_write_file_csv(setup: Setup):
 
     assert os.path.isfile(file_csv_tmp)
 
-def test_pass_convert_to_datetime() -> None:
-
-    start_time = "09:00:00"
-
-    assert datetime.strptime(start_time[:5], "%H:%M")
-
-def test_pass_datatime_none() -> None:
-
-    time_tracking = Timetracking(start_time="",
-                                 lunch_start="12:00:00",
-                                 lunch_end="13:00:00",
-                                 end_time="18:00:00",
-                                 user_id="152")
-
-    assert time_tracking.start_time is None
-
-def test_pass_calculate_work_hours():
-
-    time_tracking = Timetracking(start_time="08:25:00",
-                                 lunch_start="12:00:00",
-                                 lunch_end="13:00:00",
-                                 end_time="18:00:00",
-                                 user_id="152")
-
-    if time_tracking.end_time and \
-        time_tracking.start_time and \
-       time_tracking.lunch_end and \
-            time_tracking.lunch_start is not None:
-
-        time_work = time_tracking.end_time - time_tracking.start_time
-        time_lunch = time_tracking.lunch_end - time_tracking.lunch_start
-
-        result = calculate_work_hours(time_work, time_lunch)
-        
-        # assert (datetime.strptime("08:45:00", "%H:%M:%S") - result).time() == datetime.strptime("00:00:00", "%H:%M:%S").time()
-        assert str((datetime.strptime("08:35:00", "%H:%M:%S")-result).time()) == "00:00:00"
-        
-        # assert result.seconds == timedelta(seconds=v.timestamp())
 
 def test_pass_csv_parse(setup: Setup):
 
     _, response = setup
 
-    reader_csv = iter(csv.reader(response.content.decode(
-        'utf-8').splitlines(), delimiter=','))
+    reader_csv = iter(csv.reader(response.content.decode('utf-8').splitlines(),
+                                 delimiter=','))
 
     next(reader_csv)
 
@@ -159,13 +174,20 @@ def test_pass_csv_parse(setup: Setup):
 
     for row in reader_csv:
 
-        time_tracking = Timetracking(start_time=row[0],
-                                     lunch_start=row[1],
-                                     lunch_end=row[2],
-                                     end_time=row[3],
-                                     user_id=row[4])
+        time_tracking = Timetracking(date=row[0],
+                                     start_time=row[1],
+                                     lunch_start=row[2],
+                                     lunch_end=row[3],
+                                     end_time=row[4],
+                                     user_id=row[5])
 
-        tracking.append(check_time(time_tracking, calculate_work_hours))
+        notifiers = check_time(time_tracking)
 
+        tracking.append({time_tracking.user_id.rjust(3, '0'):
+                        [notifiers, None if notifiers else str(get_total_hours(time_tracking))]})
+
+    assert tracking != []
+    
+    print()
     for key in tracking:
         print(f"{key}")
