@@ -105,7 +105,7 @@ def test_pass_calculate_work_hours(proto_setup):
             total_hours).total_seconds() == 0.0
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module')
 def setup():
 
     CSV_URL = 'https://docs.google.com/spreadsheets/d/12IMjvF0w8MD7mYFpukNsn3F7FPJ0rlJUwM_sPnFlWW0/edit?usp=share_link'
@@ -177,8 +177,8 @@ def test_pass_csv_parse(setup: Setup):
         tracking.append({time_tracking.user_id.rjust(3, '0'):
                         [notifys, None if notifys else str(get_total_hours(time_tracking))]})
 
-    assert tracking
+    assert tracking != []
     
-    # print()
-    # for key in tracking:
-    #     print(f"{key}")
+    print()
+    for key in tracking:
+        print(f"{key}")
