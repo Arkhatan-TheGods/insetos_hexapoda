@@ -15,7 +15,8 @@ ENV/
 env.bak/
 venv.bak/
 env_insetos_hexapoda/
-
+test_trying_list2.py
+test_a.py
 # Byte-compiled / optimized / DLL files
 .pytest_cache/
 pycache/
