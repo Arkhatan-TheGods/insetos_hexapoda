@@ -17,45 +17,27 @@ class Timetracking:
                  end_time: str,
                  user_id: str) -> None:
 
-        self.start_time_is_empty = self.is_empty_string(start_time)
-        self.lunch_start_is_empty = self.is_empty_string(lunch_start)
-        self.lunch_end_is_empty = self.is_empty_string(lunch_end)
-        self.end_time_is_empty = self.is_empty_string(end_time)
-
-        self.start_time = self.convert(date, start_time)
-        self.lunch_start = self.convert(date, lunch_start)
-        self.lunch_end = self.convert(date, lunch_end)
-        self.end_time = self.convert(date, end_time)
+        self.start_time = f"{date} {start_time}" if start_time else ""
+        self.lunch_start = f"{date} {lunch_start}" if lunch_start else ""
+        self.lunch_end = f"{date} {lunch_end}" if lunch_end else ""
+        self.end_time = f"{date} {end_time}" if end_time else ""
         self.user_id = user_id
-
-    def is_empty_string(self, value: str) -> bool:
-        return True if not value else False
-
-    def convert(self, date: str, time: str) -> datetime:
-
-        date_time = f"{date} {time[:5]}"
-
-        return datetime.strptime(date_time, "%d/%m/%Y %H:%M") \
-            if time else datetime.strptime("00:00", "%H:%M")
-
-    def convert_to_date(self, date: str, format) -> datetime:
-        return datetime.strptime(date, format)
 
 
 def check_time(time_tracking: Timetracking):
 
     messages = []
 
-    if time_tracking.start_time_is_empty:
+    if not time_tracking.start_time:
         messages.append("start_time não registrado")
 
-    if time_tracking.lunch_start_is_empty:
+    if not time_tracking.lunch_start:
         messages.append("lunch_start não registrado")
 
-    if time_tracking.lunch_end_is_empty:
+    if not time_tracking.lunch_end:
         messages.append("lunch_end não registrado")
 
-    if time_tracking.end_time_is_empty:
+    if not time_tracking.end_time:
         messages.append("end_time não registrado")
 
     return messages
@@ -63,8 +45,16 @@ def check_time(time_tracking: Timetracking):
 
 def get_total_hours(time_tracking: Timetracking) -> timedelta:
 
-    time_work = time_tracking.end_time - time_tracking.start_time
-    time_lunch = time_tracking.lunch_end - time_tracking.lunch_start
+    def convert(date_time: str) -> datetime:
+        return datetime.strptime(date_time[:16], "%d/%m/%Y %H:%M")
+
+    start_time = convert(time_tracking.start_time)
+    lunch_start = convert(time_tracking.lunch_start)
+    lunch_end = convert(time_tracking.lunch_end)
+    end_time = convert(time_tracking.end_time)
+
+    time_work = end_time - start_time
+    time_lunch = lunch_end - lunch_start
 
     return time_work - time_lunch
 
@@ -95,7 +85,7 @@ def test_pass_datatime_is_empty(proto_setup) -> None:
 
     list_time_tracking: list[Timetracking] = proto_setup
 
-    assert list_time_tracking[0].start_time_is_empty
+    assert not list_time_tracking[0].start_time
 
 
 def test_pass_calculate_work_hours(proto_setup) -> None:
