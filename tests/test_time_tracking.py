@@ -123,9 +123,9 @@ def setup():
 
     if folder_data is None:
         raise TypeError("Valor 'None' fornecido para folder_data")
-
+    print('>>>>', csv_url)
     response = requests.get(csv_url)
-
+    print(response)
     file_csv_tmp = os.path.join(folder_data, file_csv)
 
     yield file_csv_tmp, response
