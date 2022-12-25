@@ -1,14 +1,12 @@
 import os
 import csv
 import pytest
-import requests
 from datetime import datetime, timedelta
 from dotenv import dotenv_values
 from typing import Tuple
+import httpx
 
 config = dotenv_values(".env_proto")
-
-Setup = Tuple[str, requests.models.Response]
 
 class Timetracking:
 
@@ -109,70 +107,41 @@ def test_pass_calculate_work_hours(proto_setup):
 @pytest.fixture(scope='module')
 def setup():
 
-    csv_url = config.get("CSV_URL")
-
-    file_csv = config.get("FILE_CSV")
-
     folder_data = config.get("FOLDER_DATA")
 
-    if csv_url is None:
-        raise TypeError("Valor 'None' fornecido para csv_url")
-
-    if file_csv is None:
-        raise TypeError("Valor 'None' fornecido para file_csv")
+    file_csv = config.get("FILE_CSV")
 
     if folder_data is None:
         raise TypeError("Valor 'None' fornecido para folder_data")
 
-    response = requests.get(csv_url)
+    if file_csv is None:
+        raise TypeError("Valor 'None' fornecido para file_csv")
 
-    file_csv_tmp = os.path.join(folder_data, file_csv)
+    file_csv = os.path.join(folder_data, file_csv)
+    
+    with open(file_csv) as file:
+        
+        csvreader = csv.reader(file)
+        
+        next(csvreader)
 
-    yield file_csv_tmp, response
+        rows = []
 
-    response.close()
+        for row in csvreader:
+            rows.append(row)
 
-    if os.path.isfile(file_csv_tmp):
-        os.remove(file_csv_tmp)
-
-def test_pass_status_code_200(setup: Setup):
-
-    _, response = setup
-
-    assert response.status_code == 200
-
-
-def test_pass_request_content(setup: Setup):
-
-    _, response = setup
-
-    assert response.content
+    yield rows
 
 
-def test_pass_write_file_csv(setup: Setup):
+def test_pass_request_content(setup: list):
 
-    file_csv_tmp, response = setup
+    assert setup != []
 
-    with open(file_csv_tmp, 'wb') as csv_file:
-
-        csv_file.write(response.content)
-        csv_file.close()
-
-    assert os.path.isfile(file_csv_tmp)
-
-
-def test_pass_csv_parse(setup: Setup):
-
-    _, response = setup
-
-    reader_csv = iter(csv.reader(response.content.decode('utf-8').splitlines(),
-                                 delimiter=','))
-
-    next(reader_csv)
-
+def test_pass_csv_parse(setup: list):
+    
     tracking = []
 
-    for row in reader_csv:
+    for row in setup:
 
         time_tracking = Timetracking(date=row[0],
                                      start_time=row[1],

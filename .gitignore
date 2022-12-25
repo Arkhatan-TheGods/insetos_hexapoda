@@ -2,6 +2,7 @@
 .vscode/
 
 data/*
+!/data/Time_Tracking.csv
 
 # Scrapy stuff:
 .scrapy
