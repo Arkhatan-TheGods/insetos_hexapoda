@@ -3,10 +3,9 @@ import csv
 import pytest
 from datetime import datetime, timedelta
 from dotenv import dotenv_values
-from typing import Tuple
-import httpx
 
 config = dotenv_values(".env_proto")
+
 
 class Timetracking:
 
@@ -35,12 +34,13 @@ class Timetracking:
     def convert(self, date: str, time: str) -> datetime:
 
         date_time = f"{date} {time[:5]}"
-        
+
         return datetime.strptime(date_time, "%d/%m/%Y %H:%M") \
             if time else datetime.strptime("00:00", "%H:%M")
 
     def convert_to_date(self, date: str, format) -> datetime:
         return datetime.strptime(date, format)
+
 
 def check_time(time_tracking: Timetracking):
 
@@ -60,6 +60,7 @@ def check_time(time_tracking: Timetracking):
 
     return messages
 
+
 def get_total_hours(time_tracking: Timetracking) -> timedelta:
 
     time_work = time_tracking.end_time - time_tracking.start_time
@@ -71,15 +72,15 @@ def get_total_hours(time_tracking: Timetracking) -> timedelta:
 @pytest.fixture(scope='function')
 def proto_setup():
 
-    lista = [
+    mock_time_tracking = [
         ["24/08/2022", "", "12:05:00", "13:08:00", "19:35:00", "201"],
         ["05/07/2022", "10:14:00", "12:22:00", "13:05:00", "20:05:00", "302"],
         ["18/10/2022", "08:25:00", "", "13:10:00", "18:55:00", "403"]
     ]
 
-    lista_time_tracking = []
+    lista_time_tracking: list[Timetracking] = []
 
-    for row in lista:
+    for row in mock_time_tracking:
         lista_time_tracking.append(Timetracking(date=row[0],
                                                 start_time=row[1],
                                                 lunch_start=row[2],
@@ -89,13 +90,15 @@ def proto_setup():
 
     yield lista_time_tracking
 
+
 def test_pass_datatime_is_empty(proto_setup) -> None:
 
     time_tracking = proto_setup
 
     assert time_tracking[0].start_time_is_empty
 
-def test_pass_calculate_work_hours(proto_setup):
+
+def test_pass_calculate_work_hours(proto_setup) -> None:
 
     time_tracking = proto_setup
 
@@ -103,6 +106,7 @@ def test_pass_calculate_work_hours(proto_setup):
 
     assert (timedelta(hours=9, minutes=8) -
             total_hours).total_seconds() == 0.0
+
 
 @pytest.fixture(scope='module')
 def setup():
@@ -118,37 +122,39 @@ def setup():
         raise TypeError("Valor 'None' fornecido para file_csv")
 
     file_csv = os.path.join(folder_data, file_csv)
-    
+
     with open(file_csv) as file:
-        
+
         csvreader = csv.reader(file)
-        
+
         next(csvreader)
 
-        rows = []
+        list_time_tracking: list[Timetracking] = []
 
         for row in csvreader:
-            rows.append(row)
 
-    yield rows
+            list_time_tracking.append(Timetracking(date=row[0],
+                                                   start_time=row[1],
+                                                   lunch_start=row[2],
+                                                   lunch_end=row[3],
+                                                   end_time=row[4],
+                                                   user_id=row[5]))
+
+    yield list_time_tracking
 
 
-def test_pass_request_content(setup: list):
+def test_pass_request_content(setup: list[Timetracking]) -> None:
 
     assert setup != []
 
-def test_pass_csv_parse(setup: list):
-    
+
+def test_pass_csv_parse(setup) -> None:
+
+    list_time_tracking: list[Timetracking] = setup
+
     tracking = []
 
-    for row in setup:
-
-        time_tracking = Timetracking(date=row[0],
-                                     start_time=row[1],
-                                     lunch_start=row[2],
-                                     lunch_end=row[3],
-                                     end_time=row[4],
-                                     user_id=row[5])
+    for time_tracking in list_time_tracking:
 
         notifiers = check_time(time_tracking)
 
@@ -156,7 +162,7 @@ def test_pass_csv_parse(setup: list):
                         [notifiers, None if notifiers else str(get_total_hours(time_tracking))]})
 
     assert tracking != []
-    
+
     print()
     for key in tracking:
         print(f"{key}")
