@@ -72,7 +72,7 @@ def get_total_hours(time_tracking: Timetracking) -> timedelta:
 @pytest.fixture(scope='function')
 def proto_setup():
 
-    mock_time_tracking = [
+    mock_csv = [
         ["24/08/2022", "", "12:05:00", "13:08:00", "19:35:00", "201"],
         ["05/07/2022", "10:14:00", "12:22:00", "13:05:00", "20:05:00", "302"],
         ["18/10/2022", "08:25:00", "", "13:10:00", "18:55:00", "403"]
@@ -80,7 +80,7 @@ def proto_setup():
 
     lista_time_tracking: list[Timetracking] = []
 
-    for row in mock_time_tracking:
+    for row in mock_csv:
         lista_time_tracking.append(Timetracking(date=row[0],
                                                 start_time=row[1],
                                                 lunch_start=row[2],
@@ -93,16 +93,16 @@ def proto_setup():
 
 def test_pass_datatime_is_empty(proto_setup) -> None:
 
-    time_tracking = proto_setup
+    list_time_tracking: list[Timetracking] = proto_setup
 
-    assert time_tracking[0].start_time_is_empty
+    assert list_time_tracking[0].start_time_is_empty
 
 
 def test_pass_calculate_work_hours(proto_setup) -> None:
 
-    time_tracking = proto_setup
+    list_time_tracking: list[Timetracking] = proto_setup
 
-    total_hours = get_total_hours(time_tracking[1])
+    total_hours = get_total_hours(list_time_tracking[1])
 
     assert (timedelta(hours=9, minutes=8) -
             total_hours).total_seconds() == 0.0
