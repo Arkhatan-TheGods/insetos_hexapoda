@@ -8,8 +8,8 @@ data/*
 .scrapy
 
 # Environments
-.env
 .env_proto
+.env
 .venv
 env/
 venv/
