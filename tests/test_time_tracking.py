@@ -1,6 +1,7 @@
 import os
 import csv
 import pytest
+import pickle
 from datetime import datetime, timedelta
 from dotenv import dotenv_values
 
@@ -113,6 +114,8 @@ def setup():
 
     file_csv = os.path.join(folder_data, file_csv)
 
+    file_pickle = os.path.join(folder_data, "tracking_temp.pickle")
+
     with open(file_csv) as file:
 
         csvreader = csv.reader(file)
@@ -130,17 +133,50 @@ def setup():
                                                    end_time=row[4],
                                                    user_id=row[5]))
 
-    yield list_time_tracking
+    yield list_time_tracking, file_pickle
 
+    if os.path.isfile(file_pickle):
+        os.remove(file_pickle)
+
+
+def serialization_dump(file_pickle, tracking):
+    with open(file_pickle, "wb") as outfile:
+        pickle.dump(tracking, outfile)
+
+def deserialization_dump(tracking):
+    with open(tracking, "rb") as infile:
+        return pickle.load(infile)
 
 def test_pass_request_content(setup: list[Timetracking]) -> None:
 
     assert setup != []
 
+def test_pass_create_file_pickle(setup) -> None:
+
+    _, file_pickle = setup
+
+    serialization_dump(file_pickle, [{"452": [[], "9:35:00"]}])
+
+    assert os.path.isfile(file_pickle)
+
+def test_pass_deserialization_data(setup) -> None:
+
+    _, file_pickle = setup
+
+    tracking = [{"453": [[], "10:35:00"]}]
+
+    serialization_dump(file_pickle, tracking)
+
+    tracking_temp = deserialization_dump(file_pickle)
+
+    assert tracking == tracking_temp
+
+def test_restore_data() -> None:
+    pass
 
 def test_pass_csv_parse(setup) -> None:
 
-    list_time_tracking: list[Timetracking] = setup
+    list_time_tracking, _ = setup
 
     tracking = []
 
