@@ -21,8 +21,6 @@ for pos, valor in enumerate(dados[1:]):
         print(f'O ID: {valor[4]} não registrou entrada no almoço.')
     elif valor[2] in '':
         print(f'O ID: {valor[4]} não registrou saída do almoço.')
-    elif valor[1] in '' and valor[2] in '':
-        print(f'O ID: {valor[4]} não comeu.')
     if valor[3] in '':
         print(f'O ID: {valor[4]} não informa saída do trabalho.')
     if valor[0] not in '' and valor[3] not in '':
@@ -33,6 +31,8 @@ for pos, valor in enumerate(dados[1:]):
             calculo += timedelta(days=1)
         if valor[1] in '' or valor[2] in '':
             calculo -= timedelta(hours=1)
+        if valor[1] in '' and valor[2] in '':
+            calculo += timedelta(hours=1)
         print(f'O ID: {valor[4]} trabalhou ao total: {calculo}.')
 
 
@@ -40,6 +40,7 @@ for pos, valor in enumerate(dados[1:]):
 def setup():
     lista = ['08:25:00', '12:15:00', '12:50:00', '19:20:00', '452']
     yield lista
+
 
 def test_pass_lista_carregada(setup) -> None:
     lista = setup
@@ -49,24 +50,58 @@ def test_pass_lista_carregada(setup) -> None:
     assert type(lista) == list
     assert isinstance(lista, list)
 
+
 def test_pass_str_in_list(setup) -> str:
-   lista = setup
-   for i, e in enumerate(lista):
-       assert type(e) == str, f'na posição {i} é esperado uma informação em formato string.'
+    lista = setup
+    for i, e in enumerate(lista):
+        assert type(
+            e) == str, f'na posição {i} é esperado uma informação em formato string.'
+
 
 def test_entrada_trabalho(setup):
     entrada_trabalho = setup[0]
     assert entrada_trabalho != None
 
+
 def test_entrada_almoco(setup):
     entrada_almoco = setup[1]
     assert entrada_almoco != None
+
 
 def test_saida_almoco(setup):
     saida_almoco = setup[2]
     assert saida_almoco != None
 
+
 def test_saida_trabalho(setup):
     saida_trabalho = setup[3]
     assert saida_trabalho != None
-    
+
+
+def test_convertendo_str_datetime(setup):
+    entrada = setup[0]
+    entrada_dt = datetime.strptime(entrada, '%H:%M:%S')
+    lunch = setup[1]
+    lunch_dt = datetime.strptime(lunch, '%H:%M:%S')
+    lunch_end = setup[2]
+    lunch_end_dt = datetime.strptime(lunch_end, '%H:%M:%S')
+    saida = setup[3]
+    saida_dt = datetime.strptime(saida, '%H:%M:%S')
+    assert isinstance(entrada_dt, datetime)
+    assert isinstance(lunch_dt, datetime)
+    assert isinstance(lunch_end_dt, datetime)
+    assert isinstance(saida_dt, datetime)
+
+
+def test_validando_calculo_datetime(setup):
+    entrada = setup[0]
+    entrada_dt = datetime.strptime(entrada, '%H:%M:%S')
+    saida = setup[3]
+    saida_dt = datetime.strptime(saida, '%H:%M:%S')
+    calculo = saida_dt - entrada_dt
+
+    if calculo < timedelta(days=0):
+        calculo += timedelta(days=1)
+
+    calculo_str = str(calculo)
+    assert calculo_str == '10:55:00'
