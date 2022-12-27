@@ -1,5 +1,6 @@
 import csv
 import os
+import pickle
 from datetime import datetime, time, timedelta
 
 caminho_arquivo = os.chdir("data\\")
@@ -9,6 +10,8 @@ with open('Time_Tracking.csv', encoding='utf-8') as arquivo:
     lendo_dados = csv.reader(arquivo)
     dados = list(lendo_dados)
     print(dados)
+
+horas_trabalhadas = []
 
 for pos, valor in enumerate(dados[1:]):
     if valor[1] in '':
@@ -29,4 +32,9 @@ for pos, valor in enumerate(dados[1:]):
             calculo -= timedelta(hours=1)
         if valor[2] in '' and valor[3] in '':
             calculo += timedelta(hours=1)
-        print(f'O ID: {valor[5]:3} trabalhou ao total: {str(calculo)}')
+        calculo_str = str(calculo)
+        print(f'O ID: {valor[5]:3} trabalhou ao total: {calculo_str}')
+        dicio = {'ID': valor[5], 'total de horas': calculo_str, }
+        horas_trabalhadas.append(dicio)
+serie = pickle.dumps(horas_trabalhadas)
+unpack = pickle.loads(serie)
