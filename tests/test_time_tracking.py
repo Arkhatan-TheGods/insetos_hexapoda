@@ -4,6 +4,7 @@ import pytest
 import pickle
 from datetime import datetime, timedelta
 from dotenv import dotenv_values
+from typing import Any
 
 config = dotenv_values(".env_proto")
 
@@ -139,17 +140,27 @@ def setup():
         os.remove(file_pickle)
 
 
-def serialization_dump(file_pickle, tracking):
+def serialization_dump(file_pickle, tracking) -> None:
     with open(file_pickle, "wb") as outfile:
         pickle.dump(tracking, outfile)
 
-def deserialization_dump(tracking):
+def deserialization_dump(tracking) -> Any:
     with open(tracking, "rb") as infile:
         return pickle.load(infile)
 
-def test_pass_request_content(setup: list[Timetracking]) -> None:
+def test_pass_request_content(setup: tuple[list[str], str]) -> None:
 
-    assert setup != []
+    list_time_tracking, _ = setup
+
+    assert list_time_tracking != []
+
+
+def test_pass_request_check_file_pickle(setup: tuple[list[str], str]) -> None:
+
+    _, file_pickle = setup
+
+    assert file_pickle
+
 
 def test_pass_create_file_pickle(setup) -> None:
 
@@ -167,12 +178,9 @@ def test_pass_deserialization_data(setup) -> None:
 
     serialization_dump(file_pickle, tracking)
 
-    tracking_temp = deserialization_dump(file_pickle)
+    tracking_temp:list[dict[str, list[Any]]] = deserialization_dump(file_pickle)
 
     assert tracking == tracking_temp
-
-def test_restore_data() -> None:
-    pass
 
 def test_pass_csv_parse(setup) -> None:
 
