@@ -1,8 +1,9 @@
 from typing import Type, Mapping, List, Dict, Tuple, Any
 from datetime import datetime
+from insetos_hexapoda.entities.product import Product
 
 
-class ExceptionProduct(Exception):
+class ProductError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
@@ -14,6 +15,27 @@ def mock_products() -> List[Any]:
             [3, 'Tênis BRBRBR-PNB', 145.90, False],
             [4, 'Tênis SSSS-T', 220.50, False],
             [5, 'Tênis XV-123', 175.90, False]]
+
+
+def mock_products_class() -> List[Product]:
+
+    return [Product(1, 'Tênis Ultimate TKYX', 150.50, True),
+            Product(2, 'Tênis BRBRBR-AAA', 360.50, True),
+            Product(3, 'Tênis BRBRBR-PNB', 145.90, False),
+            Product(4, 'Tênis SSSS-T', 220.50, False),
+            Product(5, 'Tênis XV-123', 175.90, False)]
+
+
+def available_search_product_class(products: List[Product], id: int) -> Mapping[int, list[Any]]:
+
+    product = {}
+
+    for element in products:
+        if element.code == id and element.status == True:
+            product = {element.code: [element.price, element.description]}
+            break
+
+    return product
 
 
 def available_search_product(products: List[Any], id: int) -> Mapping[int, list[Any]]:
@@ -52,7 +74,7 @@ def main():
     produto = available_search_product(mock_products(), product_id)
 
     if not produto:
-        raise ExceptionProduct(
+        raise ProductError(
             {"message": ["Produto indisponível", datetime.now().timestamp()]})
     else:
         print(produto)
@@ -61,5 +83,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except ExceptionProduct as ep:
-        print(ep)
+    except ProductError as e:
+        print(e)

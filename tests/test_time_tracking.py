@@ -5,25 +5,9 @@ import pickle
 from datetime import datetime, timedelta
 from dotenv import dotenv_values
 from typing import Any
+from insetos_hexapoda.entities.time_tracking import Timetracking
 
 config = dotenv_values(".env_proto")
-
-
-class Timetracking:
-
-    def __init__(self,
-                 date: str,
-                 start_time: str,
-                 lunch_start: str,
-                 lunch_end: str,
-                 end_time: str,
-                 user_id: str) -> None:
-
-        self.start_time = f"{date} {start_time}" if start_time else ""
-        self.lunch_start = f"{date} {lunch_start}" if lunch_start else ""
-        self.lunch_end = f"{date} {lunch_end}" if lunch_end else ""
-        self.end_time = f"{date} {end_time}" if end_time else ""
-        self.user_id = user_id
 
 
 def check_time(time_tracking: Timetracking):
@@ -144,9 +128,11 @@ def serialization_dump(file_pickle, tracking) -> None:
     with open(file_pickle, "wb") as outfile:
         pickle.dump(tracking, outfile)
 
+
 def deserialization_dump(tracking) -> Any:
     with open(tracking, "rb") as infile:
         return pickle.load(infile)
+
 
 def test_pass_request_content(setup: tuple[list[str], str]) -> None:
 
@@ -170,6 +156,7 @@ def test_pass_create_file_pickle(setup) -> None:
 
     assert os.path.isfile(file_pickle)
 
+
 def test_pass_deserialization_data(setup) -> None:
 
     _, file_pickle = setup
@@ -178,9 +165,11 @@ def test_pass_deserialization_data(setup) -> None:
 
     serialization_dump(file_pickle, tracking)
 
-    tracking_temp:list[dict[str, list[Any]]] = deserialization_dump(file_pickle)
+    tracking_temp: list[dict[str, list[Any]]
+                        ] = deserialization_dump(file_pickle)
 
     assert tracking == tracking_temp
+
 
 def test_pass_csv_parse(setup) -> None:
 
@@ -200,6 +189,7 @@ def test_pass_csv_parse(setup) -> None:
     print()
     for key in tracking:
         print(f"{key}")
+
 
 def test_pass_list():
 
