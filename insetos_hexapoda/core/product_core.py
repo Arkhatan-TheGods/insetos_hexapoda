@@ -2,10 +2,21 @@ from typing import Type, Mapping, List, Dict, Tuple, Any
 from datetime import datetime
 
 
+class Product():
+
+    def __init__(self, code: int,
+                 description: str,
+                 price: float,
+                 status: bool) -> None:
+
+        self.code = code
+        self.description = description
+        self.price = price
+        self.status = status
+
 class ProductError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
-
 
 def mock_products() -> List[Any]:
 
@@ -14,6 +25,27 @@ def mock_products() -> List[Any]:
             [3, 'Tênis BRBRBR-PNB', 145.90, False],
             [4, 'Tênis SSSS-T', 220.50, False],
             [5, 'Tênis XV-123', 175.90, False]]
+
+
+def mock_products_class() -> List[Product]:
+
+    return [Product(1, 'Tênis Ultimate TKYX', 150.50, True),
+            Product(2, 'Tênis BRBRBR-AAA', 360.50, True),
+            Product(3, 'Tênis BRBRBR-PNB', 145.90, False),
+            Product(4, 'Tênis SSSS-T', 220.50, False),
+            Product(5, 'Tênis XV-123', 175.90, False)]
+
+
+def available_search_product_class(products: List[Product], id: int) -> Mapping[int, list[Any]]:
+
+    product = {}
+
+    for element in products:
+        if element.code == id and element.status == True:
+            product = {element.code: [element.price, element.description]}
+            break
+
+    return product
 
 
 def available_search_product(products: List[Any], id: int) -> Mapping[int, list[Any]]:
