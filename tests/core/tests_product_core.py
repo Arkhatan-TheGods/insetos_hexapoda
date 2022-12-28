@@ -14,7 +14,7 @@ def setup():
     yield mock_products
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module')
 def setup_class():
 
     yield [product_core.Product(1, 'Tênis Ultimate TKYX', 150.50, True),

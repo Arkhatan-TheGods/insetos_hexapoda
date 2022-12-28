@@ -1,22 +1,12 @@
 from typing import Type, Mapping, List, Dict, Tuple, Any
 from datetime import datetime
+from insetos_hexapoda.entities.product import Product
 
-
-class Product():
-
-    def __init__(self, code: int,
-                 description: str,
-                 price: float,
-                 status: bool) -> None:
-
-        self.code = code
-        self.description = description
-        self.price = price
-        self.status = status
 
 class ProductError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
+
 
 def mock_products() -> List[Any]:
 
