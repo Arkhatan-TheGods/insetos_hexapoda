@@ -1,9 +1,8 @@
 from datetime import date, time, datetime, timedelta
 import pytest
 
-@pytest.fixture(scope='function')
-def setup_main():
-    dados = [['Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
+
+dados = [['Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
          ['08:25:00',    '12:15:00',  '12:50:00', '19:20:00',     '452'],
          ['15:40:00',    '12:00:00',  '12:45:00', '17:55:00',     '485'],
          ['07:45:00',    '11:40:00',  '12:33:00', '17:55:00',     '155'],
@@ -15,29 +14,32 @@ def setup_main():
          ['10:00:00',    '12:10:00',  '13:05:00',         '',     '424'],
          ['09:15:00',    '12:02:00',          '', '18:25:00',     '211'],
          ['08:25:00',    '13:25:00',  '12:15:00', '18:28:00',     '187']]
-    yield dados
-def results(setup_main):
-    dados = setup_main
-    for pos, valor in enumerate(dados[1:]):
-        if valor[0] in '':
-            print(f'O ID: {valor[4]} não registrou entrada no serviço.')
-        if valor[1] in '':
-            print(f'O ID: {valor[4]} não registrou entrada no almoço.')
-        elif valor[2] in '':
-            print(f'O ID: {valor[4]} não registrou saída do almoço.')
-        if valor[3] in '':
-            print(f'O ID: {valor[4]} não informa saída do trabalho.')
-        if valor[0] not in '' and valor[3] not in '':
-            entrada = datetime.strptime(valor[0], '%H:%M')
-            saida = datetime.strptime(valor[3], '%H:%M')
-            calculo = saida - entrada
-            if calculo < timedelta(days=0):
-                calculo += timedelta(days=1)
-            if valor[1] in '' or valor[2] in '':
-                calculo -= timedelta(hours=1)
-            if valor[1] in '' and valor[2] in '':
-                calculo += timedelta(hours=1)
-            print(f'O ID: {valor[4]} trabalhou ao total: {calculo}.')
+
+lista = []
+for pos, valor in enumerate(dados[1:]):
+    if not valor[0]:
+        print(f'O ID: {valor[4]} não registrou entrada no serviço.')
+    if not valor[1]:
+        print(f'O ID: {valor[4]} não registrou entrada no almoço.')
+    elif not valor[2]:
+        print(f'O ID: {valor[4]} não registrou saída do almoço.')
+    if not valor[3]:
+        print(f'O ID: {valor[4]} não informa saída do trabalho.')
+    if valor[0] and valor[3]:
+        entrada = datetime.strptime(valor[0], '%H:%M:%S')
+        saida = datetime.strptime(valor[3], '%H:%M:%S')
+        calculo = saida - entrada
+        if calculo < timedelta(days=0):
+            calculo += timedelta(days=1)
+        if not valor[1] or not valor[2]:
+            calculo -= timedelta(hours=1)
+        if not valor[1] and not valor[2]:
+            calculo += timedelta(hours=1)
+        print(f'O ID: {valor[4]} trabalhou ao total: {calculo}.')
+        dicio = {'ID': valor[4], 'Entrada serviço:': valor[0], 'Entrada Almoço:': valor[1],
+                 'Saída Almoço:': valor[2], 'Saída serviço:':valor[3] }
+        lista.append(dicio)
+#print(lista)
 
 
 @pytest.fixture(scope='function')
