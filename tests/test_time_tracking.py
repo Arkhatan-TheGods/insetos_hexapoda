@@ -3,11 +3,9 @@ import csv
 import pytest
 import pickle
 from datetime import datetime, timedelta
-from dotenv import dotenv_values
-from typing import Any
+from typing import Any, NoReturn
 from insetos_hexapoda.entities.time_tracking import Timetracking
-
-config = dotenv_values(".env_proto")
+from proto_config import load_config_tracking
 
 
 def check_time(time_tracking: Timetracking):
@@ -87,19 +85,14 @@ def test_pass_calculate_work_hours(proto_setup) -> None:
 @pytest.fixture(scope='module')
 def setup():
 
-    folder_data = config.get("FOLDER_DATA")
+    def fail(message: str) -> NoReturn:
+        pytest.xfail(message)
 
-    file_csv = config.get("FILE_CSV")
-
-    if folder_data is None:
-        raise TypeError("Valor 'None' fornecido para folder_data")
-
-    if file_csv is None:
-        raise TypeError("Valor 'None' fornecido para file_csv")
+    folder_data, file_csv, tracking_temp_pickle = load_config_tracking(fail)
 
     file_csv = os.path.join(folder_data, file_csv)
 
-    file_pickle = os.path.join(folder_data, "tracking_temp.pickle")
+    file_pickle = os.path.join(folder_data, tracking_temp_pickle)
 
     with open(file_csv) as file:
 
@@ -190,10 +183,3 @@ def test_pass_csv_parse(setup) -> None:
     for key in tracking:
         print(f"{key}")
 
-
-def test_pass_list():
-
-    registro = list("9:35:00 - CODE 02547:-K29")
-
-    if registro[0].lower() in ['0', 'c', '9']:
-        print(f">>>Registro {registro[0]} identificado")
