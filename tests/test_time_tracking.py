@@ -200,3 +200,10 @@ def test_pass_csv_parse(setup) -> None:
     print()
     for key in tracking:
         print(f"{key}")
+
+def test_pass_list():
+
+    registro = list("9:35:00 - CODE 02547:-K29")
+
+    if registro[0].lower() in ['0', 'c', '9']:
+        print(f">>>Registro {registro[0]} identificado")
