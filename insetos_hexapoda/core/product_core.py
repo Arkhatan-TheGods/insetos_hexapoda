@@ -2,7 +2,7 @@ from typing import Type, Mapping, List, Dict, Tuple, Any
 from datetime import datetime
 
 
-class ExceptionProduct(Exception):
+class ProductError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
@@ -52,7 +52,7 @@ def main():
     produto = available_search_product(mock_products(), product_id)
 
     if not produto:
-        raise ExceptionProduct(
+        raise ProductError(
             {"message": ["Produto indisponível", datetime.now().timestamp()]})
     else:
         print(produto)
@@ -61,5 +61,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except ExceptionProduct as ep:
-        print(ep)
+    except ProductError as e:
+        print(e)
