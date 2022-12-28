@@ -1,6 +1,6 @@
 import pytest
 import os
-import insetos_hexapoda.csv_file as csv
+import insetos_hexapoda.infra.csv_file_infra as csv
 
 
 def remove_file_temp(file_temp):
