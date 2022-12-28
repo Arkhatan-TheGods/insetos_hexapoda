@@ -1,6 +1,15 @@
 
+from entities.product import Product
+
+from entities.cadat import cad_teste
+
+
 def main():
-    pass
+    produto = Product(252, "teste", 152.45, False)
+
+    cad_teste()
+
+    print(produto.code)
 
 
 if __name__ == "__main__":

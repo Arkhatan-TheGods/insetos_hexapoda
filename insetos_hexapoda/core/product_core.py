@@ -1,6 +1,6 @@
 from typing import Type, Mapping, List, Dict, Tuple, Any
 from datetime import datetime
-from insetos_hexapoda.entities.product import Product
+from entities.product import Product
 
 
 class ProductError(Exception):
@@ -69,7 +69,7 @@ def available_search_product(products: List[Any], id: int) -> Mapping[int, list[
 
 def main():
 
-    product_id = 2
+    product_id = 1
 
     produto = available_search_product(mock_products(), product_id)
 
