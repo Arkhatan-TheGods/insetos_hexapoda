@@ -191,7 +191,7 @@ def setup_simulado():
         return user_id.ljust(3, "0")
 
     # mask:str = "%H:%M:%S"
-    mask:str = "%H:%M"
+    mask:str = "%d/%m/%Y %H:%M"
 
     dados = iter([['date', 'Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
                   ['24/08/2022', '08:25', '12:15', '12:50', '19:20', '452'],
@@ -216,7 +216,7 @@ def setup_simulado():
 def test_simulado(setup_simulado):
     
 
-    dados, fn_format = setup_simulado
+    fn_format, mask, dados = setup_simulado
 
     next(dados)
 
@@ -234,18 +234,17 @@ def test_simulado(setup_simulado):
                            'registro_saida': element[4],
                            'user_id': element[5]})
 
-    def calcula_total_hora(data: str,
+    def calcula_total_hora(mask: str,
+                           data: str,
                            registro_entrada: str,
                            almoco_saida: str,
                            almoco_retorno: str,
                            registro_saida: str):
-        
-        mascara = "%d/%m/%Y %H:%M:%S"
 
-        hora_entrada = datetime.strptime(f"{data} {registro_entrada}", mascara)
-        hora_almoco_saida = datetime.strptime(f"{data} {almoco_saida}", mascara)
-        hora_almoco_retorno = datetime.strptime(f"{data} {almoco_retorno}", mascara)
-        hora_saida = datetime.strptime(f"{data} {registro_saida}", mascara)
+        hora_entrada = datetime.strptime(f"{data} {registro_entrada}", mask)
+        hora_almoco_saida = datetime.strptime(f"{data} {almoco_saida}", mask)
+        hora_almoco_retorno = datetime.strptime(f"{data} {almoco_retorno}", mask)
+        hora_saida = datetime.strptime(f"{data} {registro_saida}", mask)
         
         horas_calculadas = ((hora_saida - hora_entrada) -
                             (hora_almoco_retorno - hora_almoco_saida))
@@ -275,7 +274,8 @@ def test_simulado(setup_simulado):
                 {fn_format(str(d.get('user_id'))): [falhas, None]})
 
         else:
-            total_horas = calcula_total_hora(str(d.get('data')),
+            total_horas = calcula_total_hora(mask,
+                                             str(d.get('data')),
                                              str(d.get('registro_entrada')),
                                              str(d.get('almoco_saida')),
                                              str(d.get('almoco_retorno')),
