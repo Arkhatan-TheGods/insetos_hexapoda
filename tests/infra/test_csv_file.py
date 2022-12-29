@@ -1,7 +1,10 @@
 import pytest
 import os
 from dotenv import dotenv_values
+from typing import NoReturn
 from insetos_hexapoda.infra.csv_file_infra import writing_csv, read_data_frame
+from proto_config import load_env_csv_file
+
 
 config = dotenv_values(".env_proto")
 
@@ -12,17 +15,12 @@ def remove_file_temp(file_temp):
 @pytest.fixture(scope='module')
 def setup():
 
-    folder_data = config.get("FOLDER_DATA")
+    def fail(message: str) -> NoReturn:
+        pytest.xfail(message)
 
-    file_csv_temp = config.get("FILE_CSV_TEMP")
+    data_temp, csv_temp = load_env_csv_file(fail)
 
-    if folder_data is None:
-        raise TypeError("Valor 'None' fornecido para folder_data")
-
-    if file_csv_temp is None:
-        raise TypeError("Valor 'None' fornecido para file_csv_temp")
-
-    file_temp = os.path.join(folder_data, file_csv_temp)
+    file_temp = os.path.join(data_temp, csv_temp)
 
     yield file_temp
 
