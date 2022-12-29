@@ -98,6 +98,7 @@ def setup():
         raise TypeError("Valor 'None' fornecido para file_csv")
 
     file_csv = os.path.join(folder_data, file_csv)
+    print('>>>>>',file)
 
     file_pickle = os.path.join(folder_data, "tracking_temp.pickle")
 
