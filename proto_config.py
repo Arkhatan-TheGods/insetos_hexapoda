@@ -1,27 +1,28 @@
 from dotenv import dotenv_values
-from typing import Callable, NoReturn
+from typing import Callable, NoReturn, Tuple
 
+XFailed = Callable[[str], NoReturn]
 
-def get_config_time_tracking(fail: Callable[[str], NoReturn]):
+def load_env_time_tracking(fail: XFailed) -> Tuple[str, str, str]:
 
     config = dotenv_values(".env_proto")
 
-    folder_data = str(config.get("FOLDER_DATA"))
+    data_temp = str(config.get("DATA_TEMP"))
 
-    file_csv = str(config.get("FILE_CSV"))
+    csv_file = str(config.get("CSV_FILE"))
 
-    tracking_temp_pickle = str(config.get("TRACKING_TEMP_PICKLE"))
+    dump_tracking = str(config.get("DUMP_TRACKING"))
 
-    if len(config) < 1:
+    if config == {}:
         fail("Erro ao carregar arquivo '.env_proto'")
 
-    if not folder_data:
-        fail("Parâmetro 'folder_data' vazio")
+    if not data_temp:
+        fail("env 'data_temp' vazio")
 
-    if not file_csv:
-        fail("Parâmetro 'file_csv' vazio")
+    if not csv_file:
+        fail("env 'csv_file' vazio")
 
-    if not tracking_temp_pickle:
-        fail("Parâmetro 'tracking_temp_pickle' vazio")
+    if not dump_tracking:
+        fail("env 'dump_tracking' vazio")
 
-    return folder_data, file_csv, tracking_temp_pickle
+    return data_temp, csv_file, dump_tracking
