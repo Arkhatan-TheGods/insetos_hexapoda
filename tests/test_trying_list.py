@@ -9,7 +9,7 @@ caminho_arquivo = os.chdir("data")
 with open('Time_Tracking.csv', encoding='utf-8') as arquivo:
     lendo_dados = csv.reader(arquivo)
     dados = list(lendo_dados)
-    #print(dados)
+    # print(dados)
 
 
 """dados =[['date', 'Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
@@ -53,7 +53,7 @@ for v in nova_lista:
         saida = v['data:'] + v['saida trabalho:']
         saida_dt = datetime.strptime(saida, dt_formato)
         conta = saida_dt - entrada_dt
-        dicio = {'tempo trabalhado:':str(conta),'user id:':v['user id:']}
+        dicio = {'tempo trabalhado:': str(conta), 'user id:': v['user id:']}
         horas_resultado.append(dicio)
 
     if v['entrada almoço:'] not in 'sem dado' and v['saida almoço:'] not in 'sem dado':
@@ -62,16 +62,24 @@ for v in nova_lista:
         saida = v['data:'] + v['saida almoço:']
         saida_dt = datetime.strptime(saida, dt_formato)
         conta = saida_dt - entrada_dt
-        dicio.update({'tempo no almoço:':str(conta)})
-        #horas_resultado.append(dicio)
-    
+        dicio.update({'tempo no almoço:': str(conta)})
+
     elif v['entrada almoço:'] in 'sem dado':
-        dicio.update({'tempo no almoço:':'sem dado'})
-        
+        dicio.update({'tempo no almoço:': 'sem dado'})
+
     elif v['saida almoço:'] in 'sem dado':
-        dicio.update({'tempo no almoço:':'sem dado'})
+        dicio.update({'tempo no almoço:': 'sem dado'})
 
 for c in horas_resultado:
-    print('O ID: {} trabalhou {} horas e gastou com almoço: {} horas/minutos.'.format(c['user id:'],c['tempo trabalhado:'],c['tempo no almoço:']))
-   
-    
+    if c['tempo no almoço:'] != 'sem dado':
+        dt_formato = '%H:%M:%S'
+        valor1 = datetime.strptime(c['tempo trabalhado:'], dt_formato)
+        valor2 = datetime.strptime(c['tempo no almoço:'], dt_formato)
+        resultado = valor1 - valor2
+        c.update({'tempo eficiente:': str(resultado)})
+        print('O ID: {} e o tempo total eficiente {}.'.format(
+            c['user id:'], c['tempo eficiente:']))
+
+
+# for c in horas_resultado:
+#    print('O ID: {} trabalhou {} horas e gastou com almoço: {} horas/minutos.'.format(c['user id:'],c['tempo trabalhado:'],c['tempo no almoço:']))
