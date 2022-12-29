@@ -3,7 +3,7 @@ import os
 import pickle
 from datetime import datetime, time, timedelta
 
-caminho_arquivo = os.chdir("data\\")
+caminho_arquivo = os.chdir("data")
 
 # abrindo arquivo, lendo os dados, passando para lista.
 with open('Time_Tracking.csv', encoding='utf-8') as arquivo:
