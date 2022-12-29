@@ -2,19 +2,23 @@ from dotenv import dotenv_values
 from typing import Callable, NoReturn, Tuple, Dict
 
 XFailed = Callable[[str], NoReturn]
+ConfigHighlights = Dict[str, str | None]
 
-def load_env_time_tracking(fail: XFailed) -> Tuple[str, str, str]:
 
-    config: Dict[str, str | None] = dotenv_values(".env_proto")
+def get_env_values() -> ConfigHighlights:
+    return dotenv_values(".env_proto")
+
+
+def load_env_time_tracking(config: ConfigHighlights, fail: XFailed) -> Tuple[str, str, str]:
+
+    if config == {}:
+        fail("Erro ao carregar arquivo '.env_proto'")
 
     data_temp = str(config.get("DATA_TEMP"))
 
     csv_file = str(config.get("CSV_FILE"))
 
     dump_tracking = str(config.get("DUMP_TRACKING"))
-
-    if config == {}:
-        fail("Erro ao carregar arquivo '.env_proto'")
 
     if not data_temp:
         fail("env 'data_temp' vazio")
@@ -28,16 +32,14 @@ def load_env_time_tracking(fail: XFailed) -> Tuple[str, str, str]:
     return data_temp, csv_file, dump_tracking
 
 
-def load_env_csv_file(fail: XFailed) -> Tuple[str, str]:
+def load_env_csv_file(config: ConfigHighlights, fail: XFailed) -> Tuple[str, str]:
 
-    config: Dict[str, str | None] = dotenv_values(".env_proto")
+    if config == {}:
+        fail("Erro ao carregar arquivo '.env_proto'")
 
     data_temp = str(config.get("DATA_TEMP"))
 
     csv_temp = str(config.get("CSV_TEMP"))
-
-    if config == {}:
-        fail("Erro ao carregar arquivo '.env_proto'")
 
     if not data_temp:
         fail("env 'data_temp' vazio")

@@ -5,7 +5,7 @@ import pickle
 from datetime import datetime, timedelta
 from typing import Any, NoReturn
 from insetos_hexapoda.entities.time_tracking import Timetracking
-from proto_config import load_env_time_tracking
+from proto_config import load_env_time_tracking, get_env_values
 
 
 def check_time(time_tracking: Timetracking):
@@ -88,10 +88,9 @@ def setup():
     def fail(message: str) -> NoReturn:
         pytest.xfail(message)
     
-    folder_data, file_csv, tracking_temp_pickle = load_env_time_tracking(fail)
+    folder_data, file_csv, tracking_temp_pickle = load_env_time_tracking(get_env_values(), fail)
 
     file_csv = os.path.join(folder_data, file_csv)
-    print('>>>>>',file)
 
     file_pickle = os.path.join(folder_data, tracking_temp_pickle)
 
