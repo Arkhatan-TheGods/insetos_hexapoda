@@ -3,7 +3,7 @@ import csv
 import pytest
 import pickle
 from datetime import datetime, timedelta
-from typing import Any, NoReturn
+from typing import Any, NoReturn, TypedDict
 from insetos_hexapoda.entities.time_tracking import Timetracking
 from proto_config import load_env_time_tracking, get_env_values
 
@@ -183,3 +183,97 @@ def test_pass_csv_parse(setup) -> None:
     for key in tracking:
         print(f"{key}")
 
+
+@pytest.fixture(scope='function')
+def setup_simulado():
+
+    def format_user_id(user_id: str) -> str:
+        return user_id.ljust(3, "0")
+
+    return iter([['Date', 'Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
+                 ['24/08/2022', '08:25:00', '12:15:00', '12:50:00', '19:20:00', '452'],
+                 ['15/07/2022', '15:40:00', '12:00:00', '12:45:00', '17:55:00', '485'],
+                 ['03/08/2022', '07:45:00', '12:40:00', '13:33:00', '17:55:00', '155'],
+                 ['15/06/2022', '07:12:00', '12:25:00', '12:48:00', '18:20:00', '854'],
+                 ['20/07/2022', '09:10:00', '12:13:00', '13:00:00', '10:25:00', '54'],
+                 ['07/06/2022', '08:45:00', '12:25:00', '13:20:00', '18:10:00', '201'],
+                 ['08/08/2022', '', '12:10:00', '13:00:00', '18:05:00', '120'],
+                 ['17/08/2022', '08:15:00', '', '', '18:02:00', '325'],
+                 ['07/09/2022', '10:00:00', '12:10:00', '13:05:00', '', '424'],
+                 ['18/05/2022', '09:15:00', '12:02:00', '', '18:25:00', '211'],
+                 ['05/09/2022', '08:25:00', '13:25:00', '12:15:00', '18:28:00', '187']]), format_user_id
+
+def test_simulado(setup_simulado):
+    
+
+    dados, fn_format = setup_simulado
+
+    next(dados)
+
+    nova_lista = []
+
+    falhas = []
+
+    relatorio = []
+
+    for element in dados:
+        nova_lista.append({'data': element[0],
+                           'registro_entrada': element[1],
+                           'almoco_saida': element[2],
+                           'almoco_retorno': element[3],
+                           'registro_saida': element[4],
+                           'user_id': element[5]})
+
+    def calcula_total_hora(data: str,
+                           registro_entrada: str,
+                           almoco_saida: str,
+                           almoco_retorno: str,
+                           registro_saida: str):
+        
+        mascara = "%d/%m/%Y %H:%M:%S"
+
+        hora_entrada = datetime.strptime(f"{data} {registro_entrada}", mascara)
+        hora_almoco_saida = datetime.strptime(f"{data} {almoco_saida}", mascara)
+        hora_almoco_retorno = datetime.strptime(f"{data} {almoco_retorno}", mascara)
+        hora_saida = datetime.strptime(f"{data} {registro_saida}", mascara)
+        
+        horas_calculadas = ((hora_saida - hora_entrada) -
+                            (hora_almoco_retorno - hora_almoco_saida))
+
+        return str(horas_calculadas)
+    
+    d:TypedDict
+
+    for d in nova_lista:
+        
+        falhas = []
+
+        if not d.get('registro_entrada'):
+            falhas.append("registro_entrada não identificado")
+
+        if not d.get('almoco_saida'):
+            falhas.append("almoco_saida não identificado")
+
+        if not d.get('almoco_retorno'):
+            falhas.append("almoco_retorno não identificado")
+
+        if not d.get('registro_saida'):
+            falhas.append("registro_saida não identificado")
+
+        if falhas:
+            relatorio.append(
+                {fn_format(str(d.get('user_id'))): [falhas, None]})
+
+        else:
+            total_horas = calcula_total_hora(str(d.get('data')),
+                                             str(d.get('registro_entrada')),
+                                             str(d.get('almoco_saida')),
+                                             str(d.get('almoco_retorno')),
+                                             str(d.get('registro_saida')))
+
+            relatorio.append(
+                {fn_format(str(d.get('user_id'))): [[], total_horas]})
+
+    print()
+    for rel in relatorio:
+        print(rel)
