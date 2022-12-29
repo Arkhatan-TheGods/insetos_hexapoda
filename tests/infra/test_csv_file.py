@@ -3,7 +3,7 @@ import os
 from dotenv import dotenv_values
 from typing import NoReturn
 from insetos_hexapoda.infra.csv_file_infra import writing_csv, read_data_frame
-from proto_config import load_env_csv_file
+from proto_config import load_env_csv_file, get_env_values
 
 
 config = dotenv_values(".env_proto")
@@ -18,7 +18,7 @@ def setup():
     def fail(message: str) -> NoReturn:
         pytest.xfail(message)
 
-    data_temp, csv_temp = load_env_csv_file(fail)
+    data_temp, csv_temp = load_env_csv_file(get_env_values(), fail)
 
     file_temp = os.path.join(data_temp, csv_temp)
 
