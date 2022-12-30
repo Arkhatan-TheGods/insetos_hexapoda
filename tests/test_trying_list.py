@@ -50,6 +50,7 @@ def test_trying_list(setup):
 
     nova_lista = []
     horas_resultado = []
+    sem_dados = []
     dicio = {}
 
     for c in dados[1:]:
@@ -78,7 +79,23 @@ def test_trying_list(setup):
             total = conta - conta2
             dicio = {'tempo efetivo:': str(total), 'user id:': v['user id:']}
             horas_resultado.append(dicio)
-    assert horas_resultado
+        if not v['entrada trabalho:']:
+            dicio = {'entrada trabalho:': 'sem dado', 'user id:': v['user id:']}
+            sem_dados.append(dicio)
+        if not v['entrada almoço:']:
+            dicio = {'entrada almoço:': 'sem dado', 'user id:': v['user id:']}
+            sem_dados.append(dicio)
+        if not v['saida almoço:']:
+            dicio = {'saida almoço:': 'sem dado', 'user id:': v['user id:']}
+            sem_dados.append(dicio)
+        if not v['saida trabalho:']:
+            dicio = {'saida trabalho:': 'sem dado', 'user id:': v['user id:']}
+            sem_dados.append(dicio)
+    print('\n')
+    for c in horas_resultado:
+        print(c)
+    for c in sem_dados:
+        print(c)
 
 
 """
