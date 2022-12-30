@@ -24,7 +24,6 @@ def setup():
         dados = list(lendo_dados)
         # print(dados)
 
-
     """dados =[['date', 'Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
     ['24/08/2022', '08:25', '12:15', '12:50', '19:20', '452'],
     ['15/07/2022', '07:35', '12:00', '', '17:55', '485'],
@@ -42,8 +41,8 @@ def setup():
     ['16/05/2022', '11:22', '14:18', '15:22', '20:50', '124'],
     ['05/10/2022', '09:02', '', '13:05', '18:15', '35']]"""
 
-
     return dados
+
 
 def test_trying_list(setup):
 
@@ -55,45 +54,38 @@ def test_trying_list(setup):
 
     for c in dados[1:]:
         dicio = {'data:': c[0],
-                'entrada trabalho:': c[1],
-                'entrada almoço:': c[2],
-                'saida almoço:': c[3],
-                'saida trabalho:': c[4],
-                'user id:': c[5], }
+                 'entrada trabalho:': c[1],
+                 'entrada almoço:': c[2],
+                 'saida almoço:': c[3],
+                 'saida trabalho:': c[4],
+                 'user id:': c[5], }
         nova_lista.append(dicio)
-        for k, v in dicio.items():
-            if v == "":
-                dicio[k] = "sem dado"
-
+        
     for v in nova_lista:
         dt_formato = '%d/%m/%Y%H:%M'
-        if v['entrada trabalho:'] not in 'sem dado' and v['saida trabalho:'] not in 'sem dado':
+        if v['entrada trabalho:'] and v['saida trabalho:'] and v['entrada almoço:'] and v['saida almoço:']:            
             entrada = v['data:'] + v['entrada trabalho:']
             entrada_dt = datetime.strptime(entrada, dt_formato)
             saida = v['data:'] + v['saida trabalho:']
             saida_dt = datetime.strptime(saida, dt_formato)
-            conta = saida_dt - entrada_dt
-            dicio = {'tempo trabalhado:': str(conta), 'user id:': v['user id:']}
+            conta = saida_dt - entrada_dt            
+            entrada2 = v['data:'] + v['entrada almoço:']
+            entrada2_dt = datetime.strptime(entrada2, dt_formato)
+            saida2 = v['data:'] + v['saida almoço:']
+            saida2_dt = datetime.strptime(saida2, dt_formato)
+            conta2 = saida2_dt - entrada2_dt
+            total = conta - conta2           
+            dicio = {'tempo efetivo:': str(total), 'user id:': v['user id:']}
             horas_resultado.append(dicio)
+    assert horas_resultado
 
-        if v['entrada almoço:'] not in 'sem dado' and v['saida almoço:'] not in 'sem dado':
-            entrada = v['data:'] + v['entrada almoço:']
-            entrada_dt = datetime.strptime(entrada, dt_formato)
-            saida = v['data:'] + v['saida almoço:']
-            saida_dt = datetime.strptime(saida, dt_formato)
-            conta = saida_dt - entrada_dt
-            dicio.update({'tempo no almoço:': str(conta)})
-            # horas_resultado.append(dicio)
 
-        elif v['entrada almoço:'] in 'sem dado':
-            dicio.update({'tempo no almoço:': 'sem dado'})
-
-        elif v['saida almoço:'] in 'sem dado':
-            dicio.update({'tempo no almoço:': 'sem dado'})
-
-    for c in horas_resultado:
-        if c['tempo trabalhado:'] != 'sem dado' and c['tempo no almoço:'] != 'sem dado':
-            valor1 = datetime.strptime(c['tempo trabalhado:'], '%H:%M:%S')
-            valor2 = datetime.strptime(c['tempo no almoço:'], '%H:%M:%S')
-            resultado = valor1 - valor2
-            print('ID: {} e total horas efetivas {}.'.format(c['user id:'], str(resultado)))
+"""
+[{'tempo trabalhado:': '10:55:00', 'user id:': '452'},
+ {'tempo trabalhado:': '10:10:00', 'user id:': '155'},
+  {'tempo trabalhado:': '8:25:00', 'user id:': '54'}, 
+  {'tempo trabalhado:': '10:03:00', 'user id:': '187'}, 
+  {'tempo trabalhado:': '10:50:00', 'user id:': '875'},
+   {'tempo trabalhado:': '10:46:00', 'user id:': '785'}, 
+   {'tempo trabalhado:': '9:28:00', 'user id:': '124'}]
+"""
