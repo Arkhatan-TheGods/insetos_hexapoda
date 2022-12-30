@@ -26,11 +26,10 @@ def check_time(time_tracking: Timetracking):
 
     return messages
 
-
-def get_total_hours(time_tracking: Timetracking) -> timedelta:
+def get_total_hours(time_tracking: Timetracking, mask:str) -> timedelta:
 
     def convert(date_time: str) -> datetime:
-        return datetime.strptime(date_time[:16], "%d/%m/%Y %H:%M")
+        return datetime.strptime(date_time, mask)
 
     start_time = convert(time_tracking.start_time)
     lunch_start = convert(time_tracking.lunch_start)
@@ -76,10 +75,9 @@ def test_pass_calculate_work_hours(proto_setup) -> None:
 
     list_time_tracking: list[Timetracking] = proto_setup
 
-    total_hours = get_total_hours(list_time_tracking[1])
+    total_hours = get_total_hours(list_time_tracking[1], "%d/%m/%Y %H:%M:%S")
 
-    assert (timedelta(hours=9, minutes=8) -
-            total_hours).total_seconds() == 0.0
+    assert (timedelta(hours=9, minutes=8) - total_hours).total_seconds() == 0.0
 
 
 @pytest.fixture(scope='module')
@@ -175,7 +173,7 @@ def test_pass_csv_parse(setup) -> None:
         notifiers = check_time(time_tracking)
 
         tracking.append({time_tracking.user_id.rjust(3, '0'):
-                        [notifiers, None if notifiers else str(get_total_hours(time_tracking))]})
+                        [notifiers, None if notifiers else str(get_total_hours(time_tracking, "%d/%m/%Y %H:%M"))]})
 
     assert tracking != []
 
