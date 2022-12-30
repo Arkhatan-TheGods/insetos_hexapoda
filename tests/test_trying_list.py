@@ -59,27 +59,23 @@ def test_trying_list(setup):
                  'saida almoço:': c[3],
                  'saida trabalho:': c[4],
                  'user id:': c[5], }
-                 'entrada trabalho:': c[1],
-                 'entrada almoço:': c[2],
-                 'saida almoço:': c[3],
-                 'saida trabalho:': c[4],
-                 'user id:': c[5], }
+
         nova_lista.append(dicio)
-        
+
     for v in nova_lista:
         dt_formato = '%d/%m/%Y%H:%M'
-        if v['entrada trabalho:'] and v['saida trabalho:'] and v['entrada almoço:'] and v['saida almoço:']:            
+        if v['entrada trabalho:'] and v['saida trabalho:'] and v['entrada almoço:'] and v['saida almoço:']:
             entrada = v['data:'] + v['entrada trabalho:']
             entrada_dt = datetime.strptime(entrada, dt_formato)
             saida = v['data:'] + v['saida trabalho:']
             saida_dt = datetime.strptime(saida, dt_formato)
-            conta = saida_dt - entrada_dt            
+            conta = saida_dt - entrada_dt
             entrada2 = v['data:'] + v['entrada almoço:']
             entrada2_dt = datetime.strptime(entrada2, dt_formato)
             saida2 = v['data:'] + v['saida almoço:']
             saida2_dt = datetime.strptime(saida2, dt_formato)
             conta2 = saida2_dt - entrada2_dt
-            total = conta - conta2           
+            total = conta - conta2
             dicio = {'tempo efetivo:': str(total), 'user id:': v['user id:']}
             horas_resultado.append(dicio)
     assert horas_resultado
