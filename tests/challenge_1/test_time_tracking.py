@@ -44,7 +44,7 @@ def get_total_hours(time_tracking: Timetracking, mask: str) -> timedelta:
 
 
 @pytest.fixture(scope='function')
-def proto_setup():
+def setup_mock():
 
     mock_csv = [
         ["24/08/2022", "", "12:05:00", "13:08:00", "19:35:00", "201"],
@@ -52,29 +52,29 @@ def proto_setup():
         ["18/10/2022", "08:25:00", "", "13:10:00", "18:55:00", "403"]
     ]
 
-    lista_time_tracking: list[Timetracking] = []
+    list_time_tracking: list[Timetracking] = []
 
     for row in mock_csv:
-        lista_time_tracking.append(Timetracking(date=row[0],
+        list_time_tracking.append(Timetracking(date=row[0],
                                                 start_time=row[1],
                                                 lunch_start=row[2],
                                                 lunch_end=row[3],
                                                 end_time=row[4],
                                                 user_id=row[5]))
 
-    yield lista_time_tracking
+    yield list_time_tracking
 
 
-def test_pass_datatime_is_empty(proto_setup) -> None:
+def test_pass_datatime_is_empty(setup_mock) -> None:
 
-    list_time_tracking: list[Timetracking] = proto_setup
+    list_time_tracking: list[Timetracking] = setup_mock
 
     assert not list_time_tracking[0].start_time
 
 
-def test_pass_calculate_work_hours(proto_setup) -> None:
+def test_pass_calculate_work_hours(setup_mock) -> None:
 
-    list_time_tracking: list[Timetracking] = proto_setup
+    list_time_tracking: list[Timetracking] = setup_mock
 
     total_hours = get_total_hours(list_time_tracking[1], "%d/%m/%Y %H:%M:%S")
 
@@ -211,12 +211,12 @@ def setup_simulado():
                   ['16/05/2022', '11:22', '14:18', '15:22', '20:50', '124'],
                   ['05/10/2022', '09:02', '', '13:05', '18:15', '35']])
 
-    return format_user_id, mask, dados
+    return format_user_id, dados, mask
 
 
 def test_simulado(setup_simulado):
 
-    fn_format, mask, dados = setup_simulado
+    fn_format, dados, mask = setup_simulado
 
     next(dados)
 
