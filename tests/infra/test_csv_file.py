@@ -1,10 +1,8 @@
 import pytest
 import os
 from dotenv import dotenv_values
-from typing import NoReturn
 from insetos_hexapoda.infra.csv_file_infra import writing_csv, read_data_frame
-from proto_config import load_env_csv_file, get_env_values
-
+from proto_config import ConfigProto, load_env
 
 config = dotenv_values(".env_proto")
 
@@ -15,16 +13,19 @@ def remove_file_temp(file_temp):
 @pytest.fixture(scope='module')
 def setup():
 
-    def fail(message: str) -> NoReturn:
-        pytest.xfail(message)
+    try:
+        config: ConfigProto = load_env(".env.development")
 
-    data_temp, csv_temp = load_env_csv_file(get_env_values(), fail)
+        csv_temp = os.path.join(config.data_temp, config.csv_temp)
 
-    file_temp = os.path.join(data_temp, csv_temp)
+        yield csv_temp
 
-    yield file_temp
+        remove_file_temp(csv_temp)
+    
+    except Exception as e:
+        
+        pytest.xfail(str(e))
 
-    remove_file_temp(file_temp)
 
 
 def test_passes_writing_csv(setup):

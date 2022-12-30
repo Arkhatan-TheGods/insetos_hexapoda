@@ -5,7 +5,7 @@ import pickle
 from datetime import datetime, timedelta
 from typing import Any, NoReturn, TypedDict
 from insetos_hexapoda.entities.time_tracking import Timetracking
-from proto_config import load_env_time_tracking, get_env_values
+from proto_config import ConfigProto, load_env
 
 
 def check_time(time_tracking: Timetracking):
@@ -26,7 +26,8 @@ def check_time(time_tracking: Timetracking):
 
     return messages
 
-def get_total_hours(time_tracking: Timetracking, mask:str) -> timedelta:
+
+def get_total_hours(time_tracking: Timetracking, mask: str) -> timedelta:
 
     def convert(date_time: str) -> datetime:
         return datetime.strptime(date_time, mask)
@@ -83,36 +84,38 @@ def test_pass_calculate_work_hours(proto_setup) -> None:
 @pytest.fixture(scope='module')
 def setup():
 
-    def fail(message: str) -> NoReturn:
-        pytest.xfail(message)
-    
-    folder_data, file_csv, tracking_temp_pickle = load_env_time_tracking(get_env_values(), fail)
+    try:
+        config: ConfigProto = load_env(".env.development")
 
-    file_csv = os.path.join(folder_data, file_csv)
+        file_csv = os.path.join(config.data_temp, config.csv_file)
 
-    file_pickle = os.path.join(folder_data, tracking_temp_pickle)
+        file_pickle = os.path.join(config.data_temp, config.dump_tracking)
 
-    with open(file_csv) as file:
+        with open(file_csv) as file:
 
-        csvreader = csv.reader(file)
+            csvreader = csv.reader(file)
 
-        next(csvreader)
+            next(csvreader)
 
-        list_time_tracking: list[Timetracking] = []
+            list_time_tracking: list[Timetracking] = []
 
-        for row in csvreader:
+            for row in csvreader:
 
-            list_time_tracking.append(Timetracking(date=row[0],
-                                                   start_time=row[1],
-                                                   lunch_start=row[2],
-                                                   lunch_end=row[3],
-                                                   end_time=row[4],
-                                                   user_id=row[5]))
+                list_time_tracking.append(Timetracking(date=row[0],
+                                                       start_time=row[1],
+                                                       lunch_start=row[2],
+                                                       lunch_end=row[3],
+                                                       end_time=row[4],
+                                                       user_id=row[5]))
 
-    yield list_time_tracking, file_pickle
+        yield list_time_tracking, file_pickle
 
-    if os.path.isfile(file_pickle):
-        os.remove(file_pickle)
+        if os.path.isfile(file_pickle):
+            os.remove(file_pickle)
+
+    except Exception as e:
+        
+        pytest.xfail(str(e))
 
 
 def serialization_dump(file_pickle, tracking) -> None:
@@ -189,7 +192,7 @@ def setup_simulado():
         return user_id.ljust(3, "0")
 
     # mask:str = "%H:%M:%S"
-    mask:str = "%d/%m/%Y %H:%M"
+    mask: str = "%d/%m/%Y %H:%M"
 
     dados = iter([['date', 'Start Time', 'Lunch Start', 'Lunch End', 'End Time', 'user ID'],
                   ['24/08/2022', '08:25', '12:15', '12:50', '19:20', '452'],
@@ -209,10 +212,9 @@ def setup_simulado():
                   ['05/10/2022', '09:02', '', '13:05', '18:15', '35']])
 
     return format_user_id, mask, dados
-        
+
 
 def test_simulado(setup_simulado):
-    
 
     fn_format, mask, dados = setup_simulado
 
@@ -241,18 +243,19 @@ def test_simulado(setup_simulado):
 
         hora_entrada = datetime.strptime(f"{data} {registro_entrada}", mask)
         hora_almoco_saida = datetime.strptime(f"{data} {almoco_saida}", mask)
-        hora_almoco_retorno = datetime.strptime(f"{data} {almoco_retorno}", mask)
+        hora_almoco_retorno = datetime.strptime(
+            f"{data} {almoco_retorno}", mask)
         hora_saida = datetime.strptime(f"{data} {registro_saida}", mask)
-        
+
         horas_calculadas = ((hora_saida - hora_entrada) -
                             (hora_almoco_retorno - hora_almoco_saida))
 
         return str(horas_calculadas)
-    
-    d:TypedDict
+
+    d: TypedDict
 
     for d in nova_lista:
-        
+
         falhas = []
 
         if not d.get('registro_entrada'):
