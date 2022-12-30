@@ -52,7 +52,7 @@ def test_trying_list(setup):
     horas_resultado = []
     sem_dados = []
     dicio = {}
-
+    dicio2 = {}
     for c in dados[1:]:
         dicio = {'data:': c[0],
                  'entrada trabalho:': c[1],
@@ -62,7 +62,7 @@ def test_trying_list(setup):
                  'user id:': c[5], }
 
         nova_lista.append(dicio)
-
+    
     for v in nova_lista:
         dt_formato = '%d/%m/%Y%H:%M'
         if v['entrada trabalho:'] and v['saida trabalho:'] and v['entrada almoço:'] and v['saida almoço:']:
@@ -79,31 +79,16 @@ def test_trying_list(setup):
             total = conta - conta2
             dicio = {'tempo efetivo:': str(total), 'user id:': v['user id:']}
             horas_resultado.append(dicio)
+
         if not v['entrada trabalho:']:
-            dicio = {'entrada trabalho:': 'sem dado', 'user id:': v['user id:']}
-            sem_dados.append(dicio)
+            dicio2 = {'entrada trabalho:': 'sem dado', 'user id:': v['user id:']}
+            sem_dados.append(dicio2)
         if not v['entrada almoço:']:
-            dicio = {'entrada almoço:': 'sem dado', 'user id:': v['user id:']}
-            sem_dados.append(dicio)
+            dicio2 = {'entrada almoço:': 'sem dado', 'user id:': v['user id:']}
+            sem_dados.append(dicio2)
         if not v['saida almoço:']:
-            dicio = {'saida almoço:': 'sem dado', 'user id:': v['user id:']}
-            sem_dados.append(dicio)
+            dicio2 = {'saida almoço:': 'sem dado', 'user id:': v['user id:']}
+            sem_dados.append(dicio2)
         if not v['saida trabalho:']:
-            dicio = {'saida trabalho:': 'sem dado', 'user id:': v['user id:']}
-            sem_dados.append(dicio)
-    print('\n')
-    for c in horas_resultado:
-        print(c)
-    for c in sem_dados:
-        print(c)
-
-
-"""
-[{'tempo trabalhado:': '10:55:00', 'user id:': '452'},
- {'tempo trabalhado:': '10:10:00', 'user id:': '155'},
-  {'tempo trabalhado:': '8:25:00', 'user id:': '54'}, 
-  {'tempo trabalhado:': '10:03:00', 'user id:': '187'}, 
-  {'tempo trabalhado:': '10:50:00', 'user id:': '875'},
-   {'tempo trabalhado:': '10:46:00', 'user id:': '785'}, 
-   {'tempo trabalhado:': '9:28:00', 'user id:': '124'}]
-"""
+            dicio2 = {'saida trabalho:': 'sem dado', 'user id:': v['user id:']}
+            sem_dados.append(dicio2)
