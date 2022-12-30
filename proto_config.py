@@ -9,6 +9,18 @@ def get_env_values() -> ConfigHighlights:
     return dotenv_values(".env_proto")
 
 
+def load_env_trying_list(config: ConfigHighlights, fail: XFailed) -> Tuple[str, str]:
+
+    if config == {}:
+        fail("Erro ao carregar arquivo '.env_proto'")
+
+    data_temp = str(config.get("DATA_TEMP"))
+
+    csv_file = str(config.get("CSV_FILE"))
+
+    return data_temp, csv_file
+
+
 def load_env_time_tracking(config: ConfigHighlights, fail: XFailed) -> Tuple[str, str, str]:
 
     if config == {}:
