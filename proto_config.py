@@ -5,11 +5,14 @@ class ConfigProto:
 
     def __init__(self, data_temp: str,
                  csv_file: str,
+                 csv_temp: str,
                  dump_tracking: str) -> None:
 
         self.data_temp = data_temp
 
         self.csv_file = csv_file
+
+        self.csv_temp = csv_temp
 
         self.dump_tracking = dump_tracking
 
@@ -25,6 +28,8 @@ def load_env() -> ConfigProto:
 
     csv_file: str | None = config.get("CSV_FILE")
 
+    csv_temp: str | None = config.get("CSV_TEMP")
+
     dump_tracking: str | None = config.get("DUMP_TRACKING")
 
     if data_temp is None:
@@ -33,9 +38,13 @@ def load_env() -> ConfigProto:
     if csv_file is None:
         raise NameError("Erro ao carregar campo CSV_FILE")
 
+    if csv_temp is None:
+        raise NameError("Erro ao carregar campo CSV_TEMP")
+
     if dump_tracking is None:
         raise NameError("Erro ao carregar campo DUMP_TRACKING")
 
     return ConfigProto(data_temp,
                        csv_file,
+                       csv_temp,
                        dump_tracking)
