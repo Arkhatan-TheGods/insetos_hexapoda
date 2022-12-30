@@ -85,7 +85,7 @@ def test_pass_calculate_work_hours(proto_setup) -> None:
 def setup():
 
     try:
-        config: ConfigProto = load_env()
+        config: ConfigProto = load_env(".env.development")
 
         file_csv = os.path.join(config.data_temp, config.csv_file)
 

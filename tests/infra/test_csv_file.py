@@ -14,7 +14,7 @@ def remove_file_temp(file_temp):
 def setup():
 
     try:
-        config: ConfigProto = load_env()
+        config: ConfigProto = load_env(".env.development")
 
         csv_temp = os.path.join(config.data_temp, config.csv_temp)
 

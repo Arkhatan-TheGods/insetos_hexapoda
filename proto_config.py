@@ -17,34 +17,26 @@ class ConfigProto:
         self.dump_tracking = dump_tracking
 
 
-def load_env() -> ConfigProto:
+def load_env(dotenv_path) -> ConfigProto:
 
-    config: dict[str, str | None] = dotenv_values(".env_proto")
+    config: dict[str, str | None] = dotenv_values(dotenv_path)
 
     if not config:
         raise FileNotFoundError("Erro ao carregar arquivo '.env_proto'")
 
-    data_temp: str | None = config.get("DATA_TEMP")
-
-    csv_file: str | None = config.get("CSV_FILE")
-
-    csv_temp: str | None = config.get("CSV_TEMP")
-
-    dump_tracking: str | None = config.get("DUMP_TRACKING")
-
-    if data_temp is None:
+    if config.get("DATA_TEMP") is None:
         raise NameError("Erro ao carregar campo DATA_TEMP")
 
-    if csv_file is None:
+    if config.get("CSV_FILE") is None:
         raise NameError("Erro ao carregar campo CSV_FILE")
 
-    if csv_temp is None:
+    if config.get("CSV_TEMP") is None:
         raise NameError("Erro ao carregar campo CSV_TEMP")
 
-    if dump_tracking is None:
+    if config.get("DUMP_TRACKING") is None:
         raise NameError("Erro ao carregar campo DUMP_TRACKING")
 
-    return ConfigProto(data_temp,
-                       csv_file,
-                       csv_temp,
-                       dump_tracking)
+    return ConfigProto(str(config.get("DATA_TEMP")),
+                       str(config.get("CSV_FILE")),
+                       str(config.get("CSV_TEMP")),
+                       str(config.get("DUMP_TRACKING")))

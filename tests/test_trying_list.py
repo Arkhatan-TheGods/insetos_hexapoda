@@ -10,7 +10,7 @@ from proto_config import ConfigProto, load_env
 def setup():
 
     try:
-        config: ConfigProto = load_env()
+        config: ConfigProto = load_env(".env.development")
 
         file_csv = os.path.join(config.data_temp, config.csv_file)
 
