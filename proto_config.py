@@ -1,69 +1,41 @@
 from dotenv import dotenv_values
-from typing import Callable, NoReturn, Tuple, Dict
-
-XFailed = Callable[[str], NoReturn]
-ConfigHighlights = Dict[str, str | None]
 
 
-def get_env_values() -> ConfigHighlights:
-    return dotenv_values(".env_proto")
+class ConfigProto:
+
+    def __init__(self, data_temp: str,
+                 csv_file: str,
+                 dump_tracking: str) -> None:
+
+        self.data_temp = data_temp
+
+        self.csv_file = csv_file
+
+        self.dump_tracking = dump_tracking
 
 
-def load_env_time_tracking(config: ConfigHighlights, fail: XFailed) -> Tuple[str, str, str]:
+def load_env() -> ConfigProto:
 
-    if config == {}:
-        fail("Erro ao carregar arquivo '.env_proto'")
+    config: dict[str, str | None] = dotenv_values(".env_proto")
 
-    data_temp = str(config.get("DATA_TEMP"))
+    if not config:
+        raise FileNotFoundError("Erro ao carregar arquivo '.env_proto'")
 
-    csv_file = str(config.get("CSV_FILE"))
+    data_temp: str | None = config.get("DATA_TEMP")
 
-    dump_tracking = str(config.get("DUMP_TRACKING"))
+    csv_file: str | None = config.get("CSV_FILE")
 
-    if not data_temp:
-        fail("env 'data_temp' vazio")
+    dump_tracking: str | None = config.get("DUMP_TRACKING")
 
-    if not csv_file:
-        fail("env 'csv_file' vazio")
+    if data_temp is None:
+        raise NameError("Erro ao carregar campo DATA_TEMP")
 
-    if not dump_tracking:
-        fail("env 'dump_tracking' vazio")
+    if csv_file is None:
+        raise NameError("Erro ao carregar campo CSV_FILE")
 
-    return data_temp, csv_file, dump_tracking
+    if dump_tracking is None:
+        raise NameError("Erro ao carregar campo DUMP_TRACKING")
 
-
-def load_env_csv_file(config: ConfigHighlights, fail: XFailed) -> Tuple[str, str]:
-
-    if config == {}:
-        fail("Erro ao carregar arquivo '.env_proto'")
-
-    data_temp = str(config.get("DATA_TEMP"))
-
-    csv_temp = str(config.get("CSV_TEMP"))
-
-    if not data_temp:
-        fail("env 'data_temp' vazio")
-
-    if not csv_temp:
-        fail("env 'csv_temp' vazio")
-
-    return data_temp, csv_temp
-
-
-def load_env_trying_list(config: ConfigHighlights, fail: XFailed) -> Tuple[str, str]:
-
-    if config == {}:
-        fail("Erro ao carregar arquivo '.env_proto'")
-
-    data_temp = str(config.get("DATA_TEMP"))
-
-    csv_file = str(config.get("CSV_FILE"))
-
-    if not data_temp:
-        fail("env 'data_temp' vazio")
-
-    if not csv_file:
-        fail("env 'csv_file' vazio")
-
-    return data_temp, csv_file
-
+    return ConfigProto(data_temp,
+                       csv_file,
+                       dump_tracking)
